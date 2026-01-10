@@ -1,8 +1,9 @@
+![CI](https://github.com/phranck/sf-symbols-lib/actions/workflows/sf-symbols-ci.yml/badge.svg)
+![SF Symbols](https://img.shields.io/badge/SF%20Symbols-137-blue?style=flat-square&logo=apple&logoColor=white)
+
 # SF Symbols Library
 
 A React component library for SF Symbols icons. This library contains only a subset of Apple's original SF Symbols, specifically the "hierarchical" variants. These are monochrome symbols designed for use with custom colors.
-
-![SF Symbols](https://img.shields.io/badge/SF%20Symbols-137-blue?style=flat-square&logo=apple&logoColor=white)
 
 ## Installation
 
