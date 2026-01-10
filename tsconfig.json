@@ -13,7 +13,6 @@
     "esModuleInterop": true,
     "emitDeclarationOnly": true,
     "jsx": "react-jsx",
-    "types": ["react", "react-dom"],
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
