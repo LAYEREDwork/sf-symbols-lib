@@ -2,12 +2,64 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SF Symbols Library Demo</title>
+    <title>SF Symbols — Demo</title>
+
+    <!-- Google Font: Barlow -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              barlow: ['Barlow', 'sans-serif']
+            }
+          }
+        }
+      }
+    </script>
+
+    <meta name="description" content="SF Symbols static demo using Tailwind and Barlow font" />
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="min-h-screen bg-gray-50 text-gray-900 font-barlow">
+    <main class="max-w-4xl mx-auto p-8">
+      <header class="mb-6">
+        <h1 class="text-3xl font-semibold">SF Symbols — Static Demo</h1>
+        <p class="mt-2 text-gray-600">A minimal static preview using Vanilla JS and Tailwind CSS (Barlow).</p>
+      </header>
+
+      <section id="icons" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <!-- Icons will be injected here by simple JS -->
+      </section>
+
+      <footer class="mt-8 text-sm text-gray-500">Built with Tailwind CDN • Barlow</footer>
+    </main>
+
+    <script>
+      // Minimal demo: load a few SVG icons from the dist bundle if available
+      (function renderDemoIcons(){
+        const iconsContainer = document.getElementById('icons');
+        const sampleNames = ['SFCheckmark', 'SFChevronDown', 'SFArrowUpDocumentFill'];
+        sampleNames.forEach(function(iconName){
+          const card = document.createElement('div');
+          card.className = 'p-4 bg-white rounded shadow flex flex-col items-center gap-2';
+
+          const svgHolder = document.createElement('div');
+          svgHolder.className = 'w-12 h-12';
+          svgHolder.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-full h-full"><circle cx="12" cy="12" r="10" stroke-width="2"/></svg>';
+
+          const label = document.createElement('div');
+          label.className = 'text-xs text-gray-600 font-mono';
+          label.textContent = iconName;
+
+          card.appendChild(svgHolder);
+          card.appendChild(label);
+          iconsContainer.appendChild(card);
+        });
+      })();
+    </script>
   </body>
 </html>
