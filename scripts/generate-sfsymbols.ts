@@ -337,10 +337,10 @@ function updateReadmeBadge(iconCount: number): void {
 
   // Create badge URL
   const badgeUrl = `https://img.shields.io/badge/SF%20Symbols-${iconCount}-blue?style=flat-square&logo=apple&logoColor=white`;
-  const badgeMarkdown = `![SF Symbols](${badgeUrl})\n\n`;
+  const badgeMarkdown = `![SF Symbols](${badgeUrl})`;
 
   // Replace existing badge or add new one after the title
-  const badgePattern = /!\[SF Symbols\]\([^)]+\)\n\n/;
+  const badgePattern = /!\[SF Symbols\]\([^)]+\)/;
   if (badgePattern.test(content)) {
     // Replace existing badge
     content = content.replace(badgePattern, badgeMarkdown);
@@ -350,11 +350,11 @@ function updateReadmeBadge(iconCount: number): void {
     if (titlePattern.test(content)) {
       content = content.replace(
         titlePattern,
-        `# SF Symbols Library\n\nA React component library for SF Symbols icons.\n\n${badgeMarkdown}`
+        `# SF Symbols Library\n\nA React component library for SF Symbols icons.\n\n${badgeMarkdown}\n\n`
       );
     } else {
       // Fallback: add at the beginning
-      content = `# SF Symbols Library\n\n${badgeMarkdown}A React component library for SF Symbols icons.\n\n` + content.substring(content.indexOf('\n\n') + 2);
+      content = `# SF Symbols Library\n\n${badgeMarkdown}\n\nA React component library for SF Symbols icons.\n\n` + content.substring(content.indexOf('\n\n') + 2);
     }
   }
 
