@@ -41,9 +41,21 @@ jobs:
     - run: npm ci
     - run: npm run typecheck
 
+  generate:
+    runs-on: ubuntu-latest
+    needs: typecheck
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run generate
+
   build:
     runs-on: ${{ matrix.os }}
-    needs: typecheck
+    needs: generate
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -55,18 +67,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
-
-  generate:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: '22'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run generate
 
   deploy:
     runs-on: ubuntu-latest
