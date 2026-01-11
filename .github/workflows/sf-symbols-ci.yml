@@ -82,7 +82,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
-    - run: cd docs && npm run generate
     - run: cd docs && npm run build
     - uses: actions/configure-pages@v5
     - uses: actions/upload-pages-artifact@v3
