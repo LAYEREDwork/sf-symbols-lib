@@ -74,7 +74,7 @@ function generateAvailableSymbolsFile(iconsDir: string, svgFileNames: string[]):
   const fileContent = `/**
  * Available SF Symbols from SVG Files
  * 
- * SOURCE OF TRUTH: This enum is generated directly from SVG filenames in sf-symbols/svgs/
+ * SOURCE OF TRUTH: This enum is generated directly from SVG filenames in src/components/svgs/
  * All symbol references throughout the app should use keys from this enum.
  * This ensures type-safety and prevents referencing non-existent symbols.
  * 
@@ -252,7 +252,7 @@ ${exports}
  * Main function to generate SF Icons from SVG files
  */
 async function generateSFIcons() {
-  const rawIconsDir = path.join(process.cwd(), 'svgs');
+  const rawIconsDir = path.join(process.cwd(), 'src/components/svgs');
   const iconsDir = path.join(process.cwd(), 'src/components');
 
   // Check if raw icons directory exists

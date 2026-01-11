@@ -38,15 +38,15 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run generate
-    - name: Commit updated README if changed
+    - name: Commit updated files if changed
       run: |
-        if git diff --quiet README.md; then
-          echo "README.md not changed"
+        if git diff --quiet src/components/available-sfsymbols.ts src/components/icons-data.ts src/components/icons-map.ts src/components/index.tsx README.md; then
+          echo "No changes to commit"
         else
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add README.md
-          git commit -m "Update SF Symbols badge count"
+          git add src/components/available-sfsymbols.ts src/components/icons-data.ts src/components/icons-map.ts src/components/index.tsx README.md
+          git commit -m "Update SF Symbols components and badge"
           git push
         fi
   build:
