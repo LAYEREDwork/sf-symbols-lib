@@ -11,6 +11,7 @@
 - Always use "@" imports for internal modules instead of relative paths.
 - When writing documentation, always use a newline before a tripple backtick block.
 - When code is added, deleted or refactored, always run `npm run lint`, `npm run typecheck`, `npm run build` and `npm run test` until no more errors occur.
+- If I express change requests that do not make sense in the current situation (e.g. adding tests to code that is obviously faulty), or if there are more elegant or smarter solutions, ALWAYS politely point this out to me and explain why my request is problematic.
 - **CRITICAL - DRY Principle**: Before creating new types, constants, or configurations, ALWAYS search the codebase for similar or existing implementations. If something similar already exists:
   - Use the existing implementation instead of creating duplicates
   - If the existing implementation needs extension, refactor it to be more general/reusable
