@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "generate": "node ./scripts/generate-icons-data.js",
-    "build": "rm -rf dist && npm run build --prefix .. && mkdir -p dist && cp -R ../dist/* dist/ || true && cp index.html dist/index.html && node ./scripts/generate-icons-data.js",
+    "build": "rm -rf dist && npm run build --prefix .. && mkdir -p dist && cp -R ../dist/* dist/ || true && cp index.html dist/index.html",
     "preview": "vite preview"
   },
   "dependencies": {},
