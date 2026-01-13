@@ -556,7 +556,7 @@
         align-items: center;
         box-shadow: none;
         cursor: pointer;
-        transition: box-shadow 240ms cubic-bezier(.2,.8,.2,1), transform 200ms cubic-bezier(.2,.8,.2,1), border-color 240ms;
+        transition: box-shadow 240ms cubic-bezier(.2,.8,.2,1), transform 200ms cubic-bezier(.2,.8,.2,1), border 240ms cubic-bezier(.2,.8,.2,1), outline 240ms cubic-bezier(.2,.8,.2,1);
       }
       /* Disable hover lift globally for consistent feel; keep minimal feedback via selected state */
       .card:hover {
@@ -564,17 +564,53 @@
         box-shadow: none;
       }
 
-        /* Stronger selected card ring without glow, wider, always #4ec8fe */
+        /* Stronger selected card ring with slow pulsing glow */
         .card.selected {
           border: 4px solid #4ec8fe;
-          box-shadow: none;
+          animation: selectedPulse 4.2s ease-in-out infinite;
         }
 
         /* Ensure selection ring is visible in dark mode with same color */
         .dark-mode .card.selected {
           border: 4px solid #4ec8fe;
-          box-shadow: none;
+          animation: selectedPulse 4.2s ease-in-out infinite;
         }
+
+        @keyframes selectedPulse {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(78, 200, 254, 0);
+          }
+          50% {
+            box-shadow: 0 0 16px 4px rgba(78, 200, 254, 0.5);
+          }
+        }
+
+        /* Keyboard navigation focus ring (distinct from selection) */
+        .card.focused {
+          outline: 4px solid #f59e0b;
+          outline-offset: -4px;
+        }
+
+        .dark-mode .card.focused {
+          outline: 4px solid #fbbf24;
+          outline-offset: -4px;
+        }
+
+        /* Hide focus ring when focused element is also selected */
+        .card.focused.selected {
+          outline: none;
+        }
+
+        /* Scroll margin to account for fixed header */
+        .card {
+          scroll-margin-top: calc(var(--header-height) + 1rem);
+        }
+
+        /* Additional scroll margin for drawer only when open */
+        body.drawer-open .card {
+          scroll-margin-bottom: calc(var(--drawer-height) + 1rem);
+        }
+
       .card svg {
         width: 60px;
         height: 60px;
@@ -872,7 +908,6 @@
           <select id="variant-select" class="control-select">
             <option value="hierarchical" selected>Hierarchical</option>
             <option value="monochrome">Monochrome</option>
-            <option value="multicolor">Multicolor</option>
           </select>
         </div>
 
@@ -942,6 +977,60 @@
       let allSymbolsData = globalThis.allSymbolsData || {};
       let allViewBoxData = globalThis.allViewBoxData || {};
       let selectedSymbolKey = null;
+      let focusedIndex = -1;  // Keyboard navigation focus index (-1 = no focus)
+
+      // Keyboard navigation helper functions
+      function getVisibleCards() {
+        return Array.from(document.querySelectorAll('#icons .card'));
+      }
+
+      function setFocusedCard(index) {
+        const cards = getVisibleCards();
+        // Remove old focus
+        cards.forEach(card => card.classList.remove('focused'));
+
+        if (index >= 0 && index < cards.length) {
+          focusedIndex = index;
+          const card = cards[index];
+          card.classList.add('focused');
+          // Auto-scroll into visible area
+          card.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        } else {
+          focusedIndex = -1;
+        }
+      }
+
+      function getGridColumns() {
+        const container = document.getElementById('icons');
+        const style = getComputedStyle(container);
+        const columns = style.gridTemplateColumns.split(' ').length;
+        return columns;
+      }
+
+      function getCenteredCardIndex() {
+        const cards = getVisibleCards();
+        if (cards.length === 0) return 0;
+
+        const viewportCenterY = window.scrollY + window.innerHeight / 2;
+        const viewportCenterX = window.innerWidth / 2;
+
+        let closestIndex = 0;
+        let closestDistance = Infinity;
+
+        cards.forEach((card, index) => {
+          const rect = card.getBoundingClientRect();
+          const cardCenterX = rect.left + rect.width / 2;
+          const cardCenterY = rect.top + window.scrollY + rect.height / 2;
+
+          const distance = Math.hypot(cardCenterX - viewportCenterX, cardCenterY - viewportCenterY);
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestIndex = index;
+          }
+        });
+
+        return closestIndex;
+      }
 
       // Performance tuning
       const FLIP_MEASURE_THRESHOLD = 300; // only run expensive FLIP measurements for small sets
@@ -1154,9 +1243,8 @@
           card.dataset.sfKey = key;
 
           const vb = currentViewBox[key] || '0 0 24 24';
-          // Preserve multicolor SVGs by not forcing a top-level fill when the selected
-          // variant is "multicolor". For other variants, keep the legacy behavior.
-          const shouldForceCardFill = variantSelect.value !== 'multicolor';
+          // Always force fill for consistency
+          const shouldForceCardFill = true;
           card.innerHTML = shouldForceCardFill
             ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" fill="currentColor">${svgContent}</svg>`
             : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">${svgContent}</svg>`;
@@ -1165,8 +1253,13 @@
             // Mark selected symbol (no clipboard copy)
             selectedSymbolKey = key;
             // update visuals
-            document.querySelectorAll('.card.selected').forEach(n => n.classList.remove('selected'));
+            document.querySelectorAll('.card.selected').forEach(node => node.classList.remove('selected'));
+            document.querySelectorAll('.card.focused').forEach(node => node.classList.remove('focused'));
             card.classList.add('selected');
+            card.classList.add('focused');
+            // Update focusedIndex for keyboard navigation
+            const cards = getVisibleCards();
+            focusedIndex = cards.indexOf(card);
             renderDrawerContent();
             // Open bottom drawer automatically when selecting a symbol
             openDrawer();
@@ -1178,6 +1271,9 @@
         // Replace nodes
         iconsContainer.innerHTML = '';
         iconsContainer.appendChild(fragment);
+
+        // Reset keyboard focus when grid changes
+        focusedIndex = -1;
 
         // After new nodes are in the DOM, run FLIP if we measured old positions
         if (oldRects) {
@@ -1451,10 +1547,8 @@
         const svgKey = selectedSymbolKey;
         if (currentData[svgKey]) {
           const vb = currentViewBox[svgKey] || '0 0 24 24';
-          // For multicolor variant do not force a fill attribute so the original
-          // multi-filled artwork is preserved. For other variants, apply the
-          // selected color to the preview SVG.
-          const shouldForcePreviewFill = variantSelect.value !== 'multicolor';
+          // Always force fill for consistency
+          const shouldForcePreviewFill = true;
           previewBox.innerHTML = shouldForcePreviewFill
             ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" fill="${currentColor}" width="100%" height="100%">${currentData[svgKey]}</svg>`
             : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="100%" height="100%">${currentData[svgKey]}</svg>`;
@@ -1634,10 +1728,23 @@ function MyComponent() {
 
         // Minimal syntax coloring with theme-aware CSS classes
         function escapeHtml(str) {
-          return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          // First decode any existing simple entities to avoid double-escaping
+          str = str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+          // Preserve /> for JSX self-closing tags (use string replace to avoid escaping differences)
+          str = str.split('/>').join('___SELF_CLOSE___');
+          // Escape special chars (escape & first to avoid creating new entities)
+          str = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          str = str.split('___SELF_CLOSE___').join('/>');
+          return str;
         }
 
         let highlighted = escapeHtml(numberedCode);
+
+        // Protect HTML entities from being broken up by token regex
+        highlighted = highlighted
+          .replace(/&lt;/g, '___LT___')
+          .replace(/&gt;/g, '___GT___')
+          .replace(/&amp;/g, '___AMP___');
 
         // Combined token regex to avoid double-wrapping inserted spans
         const tokenPattern = new RegExp(
@@ -1648,7 +1755,7 @@ function MyComponent() {
             '(?<template>`(?:\\\\`|\\\\\\\\|[^`])*`)',
             "(?<single>'(?:\\\\'|\\\\\\\\|[^'])*')",
             '(?<double>"(?:\\\\\"|\\\\\\\\|[^\"])*")',
-            '(?<jsxopen>&lt;\\/?)(?<jsxtag>[A-Za-z][\\w$-]*)(?=[\\s&\\/>])',
+            '(?<jsxopen>___LT___\\/?)(?<jsxtag>[A-Za-z][\\w$-]*)(?=[\\s_\\/>])',
             '(?<property>\\s[a-zA-Z_][\\w-]*(?==))',
             '(?<number>\\b\\d+(?:\\.\\d+)?\\b)',
             '(?<constant>\\b(?:true|false|null|undefined)\\b)',
@@ -1668,7 +1775,8 @@ function MyComponent() {
           if (groups.single) return `<span class="syntax-string">${groups.single}</span>`;
           if (groups.double) return `<span class="syntax-string">${groups.double}</span>`;
           if (groups.jsxopen && groups.jsxtag) return `${groups.jsxopen}<span class="syntax-component">${groups.jsxtag}</span>`;
-          if (groups.property) return ` ${'<span class="syntax-property">' + groups.property.trim() + '</span>'}=`;
+          // `groups.property` does not include the following '=' (lookahead), so do not append '=' here
+          if (groups.property) return ' ' + '<span class="syntax-property">' + groups.property.trim() + '</span>';
           if (groups.number) return `<span class="syntax-number">${groups.number}</span>`;
           if (groups.constant) return `<span class="syntax-constant">${groups.constant}</span>`;
           if (groups.keyword) return `<span class="syntax-keyword">${groups.keyword}</span>`;
@@ -1676,6 +1784,12 @@ function MyComponent() {
           if (groups.punctuation) return `<span class="syntax-punctuation">${groups.punctuation}</span>`;
           return match;
         });
+
+        // Restore HTML entities
+        highlighted = highlighted
+          .replace(/___LT___/g, '&lt;')
+          .replace(/___GT___/g, '&gt;')
+          .replace(/___AMP___/g, '&amp;');
 
         codeInner.innerHTML = highlighted;
 
@@ -1723,17 +1837,74 @@ function MyComponent() {
         document.body.classList.remove('drawer-open');
         bottomDrawer.setAttribute('aria-hidden', 'true');
         // clear visual selection
-        document.querySelectorAll('.card.selected').forEach(n => n.classList.remove('selected'));
+        document.querySelectorAll('.card.selected').forEach(node => node.classList.remove('selected'));
       }
 
-      // Close drawer and clear selection on Escape
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' || e.key === 'Esc') {
+      // Keyboard navigation and drawer controls
+      document.addEventListener('keydown', (event) => {
+        // Cmd/Ctrl+F to focus search field
+        if ((event.metaKey || event.ctrlKey) && event.key === 'f') {
+          event.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+          return;
+        }
+
+        // Escape key handling
+        if (event.key === 'Escape' || event.key === 'Esc') {
+          // If in search field and it's empty, blur the field
+          if (document.activeElement === searchInput && searchInput.value === '') {
+            searchInput.blur();
+            return;
+          }
+          // Close drawer if open
           if (selectedSymbolKey) {
             selectedSymbolKey = null;
             renderDrawerContent();
             closeDrawer();
           }
+          return;
+        }
+
+        // Don't navigate when in input field
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+
+        const cards = getVisibleCards();
+        if (cards.length === 0) return;
+
+        const cols = getGridColumns();
+
+        switch (event.key) {
+          case 'ArrowRight':
+            event.preventDefault();
+            if (focusedIndex < 0) setFocusedCard(getCenteredCardIndex());
+            else if (focusedIndex < cards.length - 1) setFocusedCard(focusedIndex + 1);
+            break;
+
+          case 'ArrowLeft':
+            event.preventDefault();
+            if (focusedIndex < 0) setFocusedCard(getCenteredCardIndex());
+            else if (focusedIndex > 0) setFocusedCard(focusedIndex - 1);
+            break;
+
+          case 'ArrowDown':
+            event.preventDefault();
+            if (focusedIndex < 0) setFocusedCard(getCenteredCardIndex());
+            else if (focusedIndex + cols < cards.length) setFocusedCard(focusedIndex + cols);
+            break;
+
+          case 'ArrowUp':
+            event.preventDefault();
+            if (focusedIndex < 0) setFocusedCard(getCenteredCardIndex());
+            else if (focusedIndex - cols >= 0) setFocusedCard(focusedIndex - cols);
+            break;
+
+          case 'Enter':
+            event.preventDefault();
+            if (focusedIndex >= 0 && focusedIndex < cards.length) {
+              cards[focusedIndex].click();
+            }
+            break;
         }
       });
 

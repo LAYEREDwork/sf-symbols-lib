@@ -16,7 +16,6 @@ export default defineConfig({
         'index': resolve(__dirname, 'src/index.ts'),
         'hierarchical/index': resolve(__dirname, 'src/hierarchical/index.tsx'),
         'monochrome/index': resolve(__dirname, 'src/monochrome/index.tsx'),
-        'multicolor/index': resolve(__dirname, 'src/multicolor/index.tsx'),
       },
       name: 'SFSymbolsLib',
       formats: ['es']

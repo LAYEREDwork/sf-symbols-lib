@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Constants for variants
-const VARIANTS = ['hierarchical', 'monochrome', 'multicolor'] as const;
+const VARIANTS = ['hierarchical', 'monochrome'] as const;
 
 type Variant = typeof VARIANTS[number];
 

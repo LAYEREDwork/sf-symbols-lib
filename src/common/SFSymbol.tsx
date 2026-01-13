@@ -1,5 +1,5 @@
 /**
- * Shared SFSymbol renderer used by all variants (hierarchical, monochrome, multicolor).
+ * Shared SFSymbol renderer used by all variants (hierarchical, monochrome).
  *
  * This centralizes the SVG rendering logic so variant wrappers remain thin and DRY.
  */
@@ -7,7 +7,6 @@ import { ReactElement } from 'react';
 
 import { sfSymbolsData as hierarchicalData, sfSymbolsViewBox as hierarchicalViewBox } from '@/hierarchical/data';
 import { sfSymbolsData as monochromeData, sfSymbolsViewBox as monochromeViewBox } from '@/monochrome/data';
-import { sfSymbolsData as multicolorData, sfSymbolsViewBox as multicolorViewBox } from '@/multicolor/data';
 
 import { SFSymbolSize } from '@/types/sizes';
 import { SFSymbolVariant } from '@/types/symbol-types';
@@ -49,10 +48,6 @@ export function SFSymbol({
   let resolvedViewBox: string | undefined = viewBox;
   if (!resolvedSvg) {
     switch (variant) {
-      case SFSymbolVariant.multicolor:
-        resolvedSvg = multicolorData[name as keyof typeof multicolorData];
-        resolvedViewBox = resolvedViewBox || multicolorViewBox[name as keyof typeof multicolorViewBox];
-        break;
       case SFSymbolVariant.hierarchical:
         resolvedSvg = hierarchicalData[name as keyof typeof hierarchicalData];
         resolvedViewBox = resolvedViewBox || hierarchicalViewBox[name as keyof typeof hierarchicalViewBox];
@@ -74,7 +69,7 @@ export function SFSymbol({
   const recolorRegex = /fill=(['"])(?:#(?:fff|ffffff)|white)\1/gi;
   const processedSvg = color ? resolvedSvg.replace(recolorRegex, `fill="${color}"`) : resolvedSvg;
 
-  const shouldForceFill = variant !== SFSymbolVariant.multicolor && !color;
+  const shouldForceFill = !color;
   const svgFillAttr = shouldForceFill ? 'currentColor' : undefined;
 
   return (

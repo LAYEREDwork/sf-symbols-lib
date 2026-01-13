@@ -21,10 +21,6 @@
     "./monochrome": {
       "types": "./dist/monochrome/index.d.ts",
       "import": "./dist/monochrome/index.js"
-    },
-    "./multicolor": {
-      "types": "./dist/multicolor/index.d.ts",
-      "import": "./dist/multicolor/index.js"
     }
   },
   "scripts": {
@@ -35,7 +31,7 @@
     "minify:dist": "node scripts/minify-dist.js",
     "generate:prod": "npm run generate && npm run minify:dist",
     "lint": "eslint .",
-    "clean:generated": "rm -rf src/hierarchical src/monochrome src/multicolor src/components/sf-symbol-name.ts src/index.ts docs/dist",
+    "clean:generated": "rm -rf src/hierarchical src/monochrome src/components/sf-symbol-name.ts src/index.ts docs/dist",
     "page": "npm run generate && browser-sync start --server docs/dist --files docs/dist/index.html --no-open",
     "page:only": "browser-sync start --server docs/dist --files docs/dist/index.html --no-open",
     "check": "npm run lint && npm run typecheck && npm run build"

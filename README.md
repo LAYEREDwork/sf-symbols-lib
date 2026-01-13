@@ -4,14 +4,14 @@
 
 # SF Symbols Library
 
-A React component library providing **6,984 SF Symbols** as type-safe React components. Supports multiple rendering variants (hierarchical, monochrome, multicolor) with optimized bundle sizes through subpath imports.
+A React component library providing **6,984 SF Symbols** as type-safe React components. Supports multiple rendering variants (hierarchical, monochrome) with optimized bundle sizes through subpath imports.
 
 ## Features
 
 - **6,984 Symbols** - Complete SF Symbols collection
 - **Type-Safe** - Full TypeScript support with autocomplete
 - **Tree-Shakeable** - Import only what you need
-- **Multiple Variants** - Hierarchical, Monochrome, Multicolor
+- **Multiple Variants** - Hierarchical, Monochrome
 - **Optimized Bundles** - Separate builds per variant
 
 ## Live Demo
@@ -67,9 +67,6 @@ import { SFSymbol, Folder } from 'sf-symbols-lib/hierarchical';
 
 // Monochrome (single color, clean)
 import { SFSymbol, Folder } from 'sf-symbols-lib/monochrome';
-
-// Multicolor (vibrant, colorful)
-import { SFSymbol, Folder } from 'sf-symbols-lib/multicolor';
 ```
 
 ### Default Import
@@ -305,8 +302,6 @@ Each variant/color combination is a separate bundle:
 | `sf-symbols-lib/hierarchical/secondary` | ~3.1 MB |
 | `sf-symbols-lib/monochrome/primary` | ~3.1 MB |
 | `sf-symbols-lib/monochrome/secondary` | ~3.1 MB |
-| `sf-symbols-lib/multicolor/primary` | ~3.1 MB |
-| `sf-symbols-lib/multicolor/secondary` | ~3.1 MB |
 
 Import only the variant you need to minimize bundle size.
 
@@ -356,8 +351,6 @@ npm run check
    │       └── your-symbol.svg
    ├── monochrome/
    │   └── ...
-   └── multicolor/
-       └── ...
    ```
 
 2. Run the generator:

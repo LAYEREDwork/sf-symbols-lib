@@ -6,10 +6,11 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
 import CleanCSS from 'clean-css';
 
 // Type definitions
-type Variant = 'hierarchical' | 'monochrome' | 'multicolor';
+type Variant = 'hierarchical' | 'monochrome';
 
 interface SymbolData {
   [key: string]: string;
@@ -18,7 +19,6 @@ interface SymbolData {
 interface VariantData {
   hierarchical: SymbolData;
   monochrome: SymbolData;
-  multicolor: SymbolData;
 }
 
 interface ChunkData {
@@ -36,7 +36,7 @@ interface MetaManifest {
   chunks: ChunksManifest;
 }
 
-const VARIANTS = ['hierarchical', 'monochrome', 'multicolor'] as const;
+const VARIANTS = ['hierarchical', 'monochrome'] as const;
 
 /**
  * Parse enum entries from sf-symbol-name.ts
@@ -112,10 +112,10 @@ function generateLoaderScript(): string {
       const CHUNKED_META_URL = './meta.json';
       // Ensure safe globals exist on the global object without touching block-scoped bindings
       globalThis.symbolNames = globalThis.symbolNames || {};
-      globalThis.allSymbolsData = globalThis.allSymbolsData || { hierarchical: {}, monochrome: {}, multicolor: {} };
-      globalThis.allViewBoxData = globalThis.allViewBoxData || { hierarchical: {}, monochrome: {}, multicolor: {} };
+      globalThis.allSymbolsData = globalThis.allSymbolsData || { hierarchical: {}, monochrome: {} };
+      globalThis.allViewBoxData = globalThis.allViewBoxData || { hierarchical: {}, monochrome: {} };
       globalThis.CHUNKS = globalThis.CHUNKS || {};
-      globalThis.chunksLoaded = globalThis.chunksLoaded || { hierarchical: new Set(), monochrome: new Set(), multicolor: new Set() };
+      globalThis.chunksLoaded = globalThis.chunksLoaded || { hierarchical: new Set(), monochrome: new Set() };
 
         function normalizeChunkUrl(rawUrl) {
           if (!rawUrl) return rawUrl;
@@ -307,12 +307,10 @@ async function main(): Promise<void> {
     const allData: VariantData = {
       hierarchical: {},
       monochrome: {},
-      multicolor: {},
     };
     const allViewBox: VariantData = {
       hierarchical: {},
       monochrome: {},
-      multicolor: {},
     };
 
     for (const variant of VARIANTS) {
