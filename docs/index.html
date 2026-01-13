@@ -19,6 +19,7 @@
     <style>
       :root {
         --control-height: 38px;
+        --control-radius: 0.75rem;
         --header-height: 140px;
         --card-size: 140px;
         --symbol-color: #000000;
@@ -85,12 +86,16 @@
 
       /* Dropdowns */
       .control-select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
         height: var(--control-height);
-        border-radius: 0.75rem;
-        padding: 0 0.75rem;
+        border-radius: var(--control-radius);
+        padding: 0 2rem 0 0.75rem;
         font-size: 0.95rem;
         border: 1px solid rgba(0,0,0,0.08);
-        background: rgba(255,255,255,0.8);
+        background: rgba(255,255,255,0.8) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+        background-size: 12px;
         color: inherit;
         cursor: pointer;
         min-width: 140px;
@@ -103,7 +108,8 @@
       }
 
       .dark-mode .control-select {
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.05) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239aa0a6' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+        background-size: 12px;
         border-color: rgba(255,255,255,0.08);
         color: #f8fafc;
       }
@@ -130,7 +136,7 @@
         position: relative;
         width: 140px;
         height: var(--control-height);
-        border-radius: 0.75rem;
+        border-radius: var(--control-radius);
         border: 1px solid rgba(0,0,0,0.08);
         background: rgba(255,255,255,0.8);
         cursor: pointer;
@@ -167,7 +173,7 @@
         background: rgba(255,255,255,0.95);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
-        border-radius: 0.75rem;
+        border-radius: var(--control-radius);
         border: 1px solid rgba(0,0,0,0.08);
         padding: 0.75rem;
         box-shadow: 0 6px 18px rgba(0,0,0,0.15);
@@ -226,7 +232,7 @@
         border: 1px solid rgba(0,0,0,0.08);
         background: transparent;
         cursor: pointer;
-        border-radius: 6px;
+        border-radius: var(--control-radius);
         color: inherit;
       }
 
@@ -295,7 +301,7 @@
 
       /* Theme toggle */
       .theme-toggle {
-        border-radius: 0.75rem;
+        border-radius: var(--control-radius);
         padding: 0.45rem 0.9rem;
         font-size: 1.05rem;
         display: inline-flex;
@@ -394,6 +400,86 @@
         border: 1px solid rgba(255,255,255,0.04);
       }
 
+      /* Copy modal */
+      .copy-modal {
+        background: rgba(255,255,255,0.98);
+        border-radius: 12px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        padding: 1.5rem;
+        box-sizing: border-box;
+        transform: translateY(8px) scale(0.99);
+        opacity: 0;
+        transition: transform 260ms cubic-bezier(.2,.9,.2,1), opacity 220ms ease;
+      }
+
+      .modal-overlay.show .copy-modal {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .copy-modal h3 {
+        margin: 0 0 1rem 0;
+        text-align: center;
+        font-size: 1.1rem;
+      }
+
+      .dark-mode .copy-modal {
+        background: rgba(18,20,22,0.98);
+        color: #e6eef8;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.04);
+      }
+
+      .copy-option {
+        display: flex;
+        flex-direction: column;
+        padding: 0.75rem 1rem;
+        border-radius: var(--control-radius);
+        cursor: pointer;
+        border: 1px solid rgba(0,0,0,0.08);
+        margin-bottom: 0.5rem;
+        transition: background 150ms ease, border-color 150ms ease;
+      }
+
+      .copy-option:last-child {
+        margin-bottom: 0;
+      }
+
+      .copy-option:hover,
+      .copy-option.focused {
+        background: rgba(78, 200, 254, 0.1);
+        border-color: #4ec8fe;
+      }
+
+      .copy-option-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+      }
+
+      .copy-option-value {
+        font-weight: 600;
+        word-break: break-all;
+      }
+
+      .dark-mode .copy-option {
+        border-color: rgba(255,255,255,0.08);
+      }
+
+      .dark-mode .copy-option:hover,
+      .dark-mode .copy-option.focused {
+        background: rgba(78, 200, 254, 0.15);
+        border-color: #4ec8fe;
+      }
+
+      .dark-mode .copy-option-label {
+        color: #9aa0a6;
+      }
+
       /* Bottom drawer */
       #bottom-drawer {
         position: fixed;
@@ -442,7 +528,7 @@
       /* Search input */
       .search-input {
         height: var(--control-height);
-        border-radius: 0.75rem;
+        border-radius: var(--control-radius);
         padding: 0 0.75rem;
         font-size: 1rem;
         border: 1px solid rgba(0,0,0,0.08);
@@ -485,6 +571,17 @@
         background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239aa0a6' viewBox='0 0 16 16'%3E%3Cpath d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z'/%3E%3C/svg%3E") center/contain no-repeat;
       }
 
+      /* Override Bootstrap input-group border-radius */
+      .input-group > .search-input {
+        border-radius: var(--control-radius) 0 0 var(--control-radius) !important;
+      }
+
+      .input-group > .btn,
+      #search-help-button {
+        border-radius: 0 var(--control-radius) var(--control-radius) 0 !important;
+        height: var(--control-height);
+      }
+
       /* Search help popover */
       .search-help-popover {
         position: absolute;
@@ -496,7 +593,7 @@
         background: rgba(255,255,255,0.98);
         color: inherit;
         border: 1px solid rgba(0,0,0,0.08);
-        border-radius: 8px;
+        border-radius: var(--control-radius);
         box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         padding: 0.75rem;
         display: none;
@@ -1172,9 +1269,134 @@
       });
 
       // Close modal on Escape
-      document.addEventListener('keydown', (ev) => {
-        if ((ev.key === 'Escape' || ev.key === 'Esc') && aboutModalOverlay.classList.contains('show')) {
+      document.addEventListener('keydown', (event) => {
+        if ((event.key === 'Escape' || event.key === 'Esc') && aboutModalOverlay.classList.contains('show')) {
           closeAboutModal();
+        }
+      });
+
+      // Copy modal: create DOM once and control via show/hide
+      const copyModalOverlay = document.createElement('div');
+      copyModalOverlay.className = 'modal-overlay';
+      copyModalOverlay.id = 'copy-modal';
+      copyModalOverlay.setAttribute('role', 'dialog');
+      copyModalOverlay.setAttribute('aria-modal', 'true');
+      copyModalOverlay.setAttribute('aria-hidden', 'true');
+
+      const copyModal = document.createElement('div');
+      copyModal.className = 'copy-modal';
+
+      const copyTitle = document.createElement('h3');
+      copyTitle.textContent = 'Copy to Clipboard';
+
+      const copyOptionsContainer = document.createElement('div');
+      copyOptionsContainer.className = 'copy-options';
+
+      copyModal.appendChild(copyTitle);
+      copyModal.appendChild(copyOptionsContainer);
+      copyModalOverlay.appendChild(copyModal);
+      document.body.appendChild(copyModalOverlay);
+
+      let copyModalFocusedIndex = 0;
+      let copyOptions = [];
+
+      function openCopyModal() {
+        if (!selectedSymbolKey) return;
+
+        const displayName = (globalThis.symbolNames || {})[selectedSymbolKey] || selectedSymbolKey;
+
+        // Clear and rebuild options
+        copyOptionsContainer.innerHTML = '';
+        copyOptions = [];
+
+        // Package Symbol Name option
+        const packageOption = document.createElement('div');
+        packageOption.className = 'copy-option';
+        packageOption.innerHTML = `
+          <span class="copy-option-label">Package Symbol Name</span>
+          <span class="copy-option-value">${displayName}</span>
+        `;
+        packageOption.dataset.copyValue = displayName;
+        packageOption.addEventListener('click', () => copyAndClose(displayName));
+        copyOptionsContainer.appendChild(packageOption);
+        copyOptions.push(packageOption);
+
+        // Apple Symbol Name option
+        const appleOption = document.createElement('div');
+        appleOption.className = 'copy-option';
+        appleOption.innerHTML = `
+          <span class="copy-option-label">Apple Symbol Name</span>
+          <span class="copy-option-value">${selectedSymbolKey}</span>
+        `;
+        appleOption.dataset.copyValue = selectedSymbolKey;
+        appleOption.addEventListener('click', () => copyAndClose(selectedSymbolKey));
+        copyOptionsContainer.appendChild(appleOption);
+        copyOptions.push(appleOption);
+
+        // Reset focus to first option
+        copyModalFocusedIndex = 0;
+        updateCopyModalFocus();
+
+        copyModalOverlay.classList.add('show');
+        copyModalOverlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeCopyModal() {
+        copyModalOverlay.classList.remove('show');
+        copyModalOverlay.setAttribute('aria-hidden', 'true');
+      }
+
+      function updateCopyModalFocus() {
+        copyOptions.forEach((option, index) => {
+          option.classList.toggle('focused', index === copyModalFocusedIndex);
+        });
+      }
+
+      function copyAndClose(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          closeCopyModal();
+          showToast('Copied to clipboard');
+        }).catch(() => {
+          closeCopyModal();
+          showToast('Failed to copy');
+        });
+      }
+
+      // Close copy modal on overlay click outside content
+      copyModalOverlay.addEventListener('click', (event) => {
+        if (event.target === copyModalOverlay) closeCopyModal();
+      });
+
+      // Copy modal keyboard navigation
+      document.addEventListener('keydown', (event) => {
+        if (!copyModalOverlay.classList.contains('show')) return;
+
+        switch (event.key) {
+          case 'Escape':
+          case 'Esc':
+            event.preventDefault();
+            closeCopyModal();
+            break;
+
+          case 'ArrowDown':
+            event.preventDefault();
+            copyModalFocusedIndex = (copyModalFocusedIndex + 1) % copyOptions.length;
+            updateCopyModalFocus();
+            break;
+
+          case 'ArrowUp':
+            event.preventDefault();
+            copyModalFocusedIndex = (copyModalFocusedIndex - 1 + copyOptions.length) % copyOptions.length;
+            updateCopyModalFocus();
+            break;
+
+          case 'Enter':
+            event.preventDefault();
+            if (copyOptions[copyModalFocusedIndex]) {
+              const text = copyOptions[copyModalFocusedIndex].dataset.copyValue;
+              copyAndClose(text);
+            }
+            break;
         }
       });
 
@@ -1576,8 +1798,8 @@
         pkgLabel.textContent = 'Package Symbol Name';
         const pkgValue = document.createElement('div');
         pkgValue.textContent = displayName;
-        // Increase the value font size for better readability
-        pkgValue.style.fontSize = '1.15rem';
+        pkgValue.style.fontSize = '1.3rem';
+        pkgValue.style.fontWeight = 'bold';
         pkgValue.style.lineHeight = '1.2';
 
         const appleLabel = document.createElement('div');
@@ -1585,8 +1807,8 @@
         appleLabel.textContent = 'Apple Symbol Name';
         const appleValue = document.createElement('div');
         appleValue.textContent = selectedSymbolKey;
-        // Increase the value font size for better readability
-        appleValue.style.fontSize = '1.05rem';
+        appleValue.style.fontSize = '1.3rem';
+        appleValue.style.fontWeight = 'bold';
         appleValue.style.lineHeight = '1.2';
 
         // Build rows with copy buttons for package and apple names
@@ -1842,6 +2064,13 @@ function MyComponent() {
 
       // Keyboard navigation and drawer controls
       document.addEventListener('keydown', (event) => {
+        // Cmd/Ctrl+C to open copy modal when symbol is selected
+        if ((event.metaKey || event.ctrlKey) && event.key === 'c' && selectedSymbolKey) {
+          event.preventDefault();
+          openCopyModal();
+          return;
+        }
+
         // Cmd/Ctrl+F to focus search field
         if ((event.metaKey || event.ctrlKey) && event.key === 'f') {
           event.preventDefault();
@@ -1866,8 +2095,9 @@ function MyComponent() {
           return;
         }
 
-        // Don't navigate when in input field
+        // Don't navigate when in input field or modal is open
         if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+        if (copyModalOverlay.classList.contains('show')) return;
 
         const cards = getVisibleCards();
         if (cards.length === 0) return;
