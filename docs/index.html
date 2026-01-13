@@ -766,43 +766,45 @@
         /* Dock code box to top/right/bottom by removing extra spacing inside */
         #drawer-content .drawer-code pre { margin: 0; }
 
-        .codebox-bg {
-          background: #efefef;
+        /* Codebox theme variables for light/dark - subtle, colorful palette */
+        :root {
+          --codebox-background: #efefef;
+          --syntax-keyword-color: #3b6ea8; /* soft blue */
+          --syntax-string-color: #2f8f6e; /* soft green */
+          --syntax-component-color: #b3613a; /* warm terracotta */
+          --syntax-comment-color: #6b7280; /* muted slate */
+          --syntax-number-color: #a96bd6; /* soft purple */
+          --syntax-constant-color: #d18b2f; /* amber */
+          --syntax-operator-color: #5f6b77; /* subdued gray */
+          --syntax-property-color: #3178c6; /* property blue */
+          --syntax-punctuation-color: #667085; /* muted */
         }
 
-        .dark-mode .codebox-bg {
-          background: #1c2327;
+        .dark-mode {
+          --codebox-background: #1b2226;
+          --syntax-keyword-color: #7fb3ff;
+          --syntax-string-color: #79e0a6;
+          --syntax-component-color: #ffb38a;
+          --syntax-comment-color: #9aa3ad;
+          --syntax-number-color: #cfa3ff;
+          --syntax-constant-color: #ffcc99;
+          --syntax-operator-color: #97a0ab;
+          --syntax-property-color: #9ecbff;
+          --syntax-punctuation-color: #9aa3ad;
         }
 
-        /* Syntax highlighting - subtle, theme-aware colors */
-        .syntax-keyword {
-          color: #5a6a7a;
-        }
-        .dark-mode .syntax-keyword {
-          color: #8a9aaa;
-        }
+        .codebox-bg { background: var(--codebox-background); }
 
-        .syntax-string {
-          color: #6a8a6a;
-        }
-        .dark-mode .syntax-string {
-          color: #8aaa8a;
-        }
-
-        .syntax-component {
-          color: #7a7080;
-        }
-        .dark-mode .syntax-component {
-          color: #a09aaa;
-        }
-
-        .syntax-comment {
-          color: #9a9a9a;
-          font-style: italic;
-        }
-        .dark-mode .syntax-comment {
-          color: #707070;
-        }
+        /* Syntax highlighting using variables so colors adapt to mode */
+        .syntax-keyword { color: var(--syntax-keyword-color); }
+        .syntax-string { color: var(--syntax-string-color); }
+        .syntax-component { color: var(--syntax-component-color); }
+        .syntax-comment { color: var(--syntax-comment-color); font-style: italic; }
+        .syntax-number { color: var(--syntax-number-color); }
+        .syntax-constant { color: var(--syntax-constant-color); }
+        .syntax-operator { color: var(--syntax-operator-color); }
+        .syntax-property { color: var(--syntax-property-color); }
+        .syntax-punctuation { color: var(--syntax-punctuation-color); }
 
         /* On narrow viewports stack code box under preview/info */
         @media (max-width: 900px) {
@@ -1636,14 +1638,44 @@ function MyComponent() {
         }
 
         let highlighted = escapeHtml(numberedCode);
-        // comments (JSX style {/* ... */})
-        highlighted = highlighted.replace(/(\{\/\*.*?\*\/\})/g, '<span class="syntax-comment">$1</span>');
-        // strings
-        highlighted = highlighted.replace(/'([^']*)'|"([^"]*)"/g, '<span class="syntax-string">$&</span>');
-        // keywords
-        highlighted = highlighted.replace(/\b(import|from|function|return|const|let)\b/g, '<span class="syntax-keyword">$1</span>');
-        // JSX components (SFSymbol, MyComponent, div, button, span)
-        highlighted = highlighted.replace(/\b(SFSymbol|MyComponent|div|button|span)\b/g, '<span class="syntax-component">$1</span>');
+
+        // Combined token regex to avoid double-wrapping inserted spans
+        const tokenPattern = new RegExp(
+          [
+            '(?<jsxcomment>\\{\\/[\\*][\\s\\S]*?[\\*]\\/\\})', // JSX block comment {/* ... */}
+            '(?<blockcomment>\\/\\*[\\s\\S]*?\\*\\/)',
+            '(?<linecomment>\\/\\/.*?$)',
+            '(?<template>`(?:\\\\`|\\\\\\\\|[^`])*`)',
+            "(?<single>'(?:\\\\'|\\\\\\\\|[^'])*')",
+            '(?<double>"(?:\\\\\"|\\\\\\\\|[^\"])*")',
+            '(?<jsxopen>&lt;\\/?)(?<jsxtag>[A-Za-z][\\w$-]*)(?=[\\s&\\/>])',
+            '(?<property>\\s[a-zA-Z_][\\w-]*(?==))',
+            '(?<number>\\b\\d+(?:\\.\\d+)?\\b)',
+            '(?<constant>\\b(?:true|false|null|undefined)\\b)',
+            '(?<keyword>\\b(?:import|from|function|return|const|let|if|else|for|while|switch|case|break|continue|class|extends|new|try|catch|finally|throw|await|async)\\b)',
+            '(?<operator>[+\\-*/%=<>!&|^~?:]+)',
+            '(?<punctuation>[()[\\]{}.,;])'
+          ].join('|'),
+          'gm'
+        );
+
+        highlighted = highlighted.replace(tokenPattern, (match, ...callbackArgs) => {
+          const groups = callbackArgs[callbackArgs.length - 1] || {};
+          if (groups.jsxcomment) return `<span class="syntax-comment">${groups.jsxcomment}</span>`;
+          if (groups.blockcomment) return `<span class="syntax-comment">${groups.blockcomment}</span>`;
+          if (groups.linecomment) return `<span class="syntax-comment">${groups.linecomment}</span>`;
+          if (groups.template) return `<span class="syntax-string">${groups.template}</span>`;
+          if (groups.single) return `<span class="syntax-string">${groups.single}</span>`;
+          if (groups.double) return `<span class="syntax-string">${groups.double}</span>`;
+          if (groups.jsxopen && groups.jsxtag) return `${groups.jsxopen}<span class="syntax-component">${groups.jsxtag}</span>`;
+          if (groups.property) return ` ${'<span class="syntax-property">' + groups.property.trim() + '</span>'}=`;
+          if (groups.number) return `<span class="syntax-number">${groups.number}</span>`;
+          if (groups.constant) return `<span class="syntax-constant">${groups.constant}</span>`;
+          if (groups.keyword) return `<span class="syntax-keyword">${groups.keyword}</span>`;
+          if (groups.operator) return `<span class="syntax-operator">${groups.operator}</span>`;
+          if (groups.punctuation) return `<span class="syntax-punctuation">${groups.punctuation}</span>`;
+          return match;
+        });
 
         codeInner.innerHTML = highlighted;
 
