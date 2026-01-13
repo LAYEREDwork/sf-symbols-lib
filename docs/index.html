@@ -471,6 +471,20 @@
         color: #9aa0a6;
       }
 
+      /* Search input clear button (WebKit) - using Bootstrap Icons x-circle-fill */
+      .search-input::-webkit-search-cancel-button {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 18px;
+        width: 18px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z'/%3E%3C/svg%3E") center/contain no-repeat;
+        cursor: pointer;
+      }
+
+      .dark-mode .search-input::-webkit-search-cancel-button {
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239aa0a6' viewBox='0 0 16 16'%3E%3Cpath d='M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z'/%3E%3C/svg%3E") center/contain no-repeat;
+      }
+
       /* Search help popover */
       .search-help-popover {
         position: absolute;
@@ -758,6 +772,36 @@
 
         .dark-mode .codebox-bg {
           background: #1c2327;
+        }
+
+        /* Syntax highlighting - subtle, theme-aware colors */
+        .syntax-keyword {
+          color: #5a6a7a;
+        }
+        .dark-mode .syntax-keyword {
+          color: #8a9aaa;
+        }
+
+        .syntax-string {
+          color: #6a8a6a;
+        }
+        .dark-mode .syntax-string {
+          color: #8aaa8a;
+        }
+
+        .syntax-component {
+          color: #7a7080;
+        }
+        .dark-mode .syntax-component {
+          color: #a09aaa;
+        }
+
+        .syntax-comment {
+          color: #9a9a9a;
+          font-style: italic;
+        }
+        .dark-mode .syntax-comment {
+          color: #707070;
         }
 
         /* On narrow viewports stack code box under preview/info */
@@ -1538,24 +1582,68 @@
 
         // Build example code with the selected package symbol name
         const importedName = displayName || 'SelectedSymbol';
-        const exampleCode = `import { SFSymbol, ${importedName} } from 'sf-symbols-lib/hierarchical/primary';\n\nfunction MyComponent() {\n  return (\n    <div>\n      {/* Basic usage */}\n      <SFSymbol name={${importedName}} />\n\n      {/* With size */}\n      <SFSymbol name={${importedName}} size={32} />\n\n      {/* With size preset */}\n      <SFSymbol name={${importedName}} size=\"lg\" />\n    </div>\n  );\n}\n`;
+        const exampleCode = `import { SFSymbol, ${importedName} } from 'sf-symbols-lib/hierarchical/primary';
+
+function MyComponent() {
+  return (
+    <div>
+      {/* Basic usage */}
+      <SFSymbol name={${importedName}} />
+
+      {/* With size */}
+      <SFSymbol name={${importedName}} size={32} />
+
+      {/* With size preset */}
+      <SFSymbol name={${importedName}} size="lg" />
+
+      {/* Color via CSS */}
+      <SFSymbol name={${importedName}} className="text-red-500" />
+
+      {/* Inline style */}
+      <SFSymbol name={${importedName}} style={{ color: '#ff0000' }} />
+
+      {/* With CSS variable */}
+      <SFSymbol name={${importedName}} style={{ color: 'var(--accent-color)' }} />
+
+      {/* Icon button */}
+      <button className="icon-button">
+        <SFSymbol name={${importedName}} size={20} />
+      </button>
+
+      {/* Button with icon and text */}
+      <button className="flex items-center gap-2">
+        <SFSymbol name={${importedName}} size={16} />
+        <span>Edit</span>
+      </button>
+
+      {/* Danger button */}
+      <button className="flex items-center gap-2 text-red-500">
+        <SFSymbol name={${importedName}} size={16} />
+        <span>Delete</span>
+      </button>
+    </div>
+  );
+}
+`;
 
         // Add line numbers
         const lines = exampleCode.split('\n');
         const numberedCode = lines.map((line, index) => `${(index + 1).toString().padStart(2, ' ')} ${line}`).join('\n');
 
-        // Minimal syntax coloring (keywords, strings, JSX tags)
+        // Minimal syntax coloring with theme-aware CSS classes
         function escapeHtml(str) {
           return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
 
         let highlighted = escapeHtml(numberedCode);
+        // comments (JSX style {/* ... */})
+        highlighted = highlighted.replace(/(\{\/\*.*?\*\/\})/g, '<span class="syntax-comment">$1</span>');
         // strings
-        highlighted = highlighted.replace(/'(.*?)'|\"(.*?)\"/g, '<span style="color:#ce9178">$&</span>');
+        highlighted = highlighted.replace(/'([^']*)'|"([^"]*)"/g, '<span class="syntax-string">$&</span>');
         // keywords
-        highlighted = highlighted.replace(/\b(import|from|function|return|const|let)\b/g, '<span style="color:#569cd6">$1</span>');
-        // JSX components (SFSymbol, MyComponent)
-        highlighted = highlighted.replace(/\b(SFSymbol|MyComponent|div)\b/g, '<span style="color:#4ec9b0">$1</span>');
+        highlighted = highlighted.replace(/\b(import|from|function|return|const|let)\b/g, '<span class="syntax-keyword">$1</span>');
+        // JSX components (SFSymbol, MyComponent, div, button, span)
+        highlighted = highlighted.replace(/\b(SFSymbol|MyComponent|div|button|span)\b/g, '<span class="syntax-component">$1</span>');
 
         codeInner.innerHTML = highlighted;
 
