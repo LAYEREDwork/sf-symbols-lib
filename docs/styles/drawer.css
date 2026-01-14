@@ -4,7 +4,8 @@
 #drawer-content {
   height: 100%;
   box-sizing: border-box;
-  overflow: auto;
+  position: relative; /* positioned container for absolutely placed controls */
+  overflow: auto; /* make the drawer itself scrollable so controls can be anchored to its viewport */
 }
 
 #drawer-content .drawer-selected {
@@ -25,7 +26,7 @@
   overflow: auto;
   padding-top: 0; /* ensure codebox docks to top */
   padding-bottom: 0; /* ensure codebox docks to bottom */
-  position: relative;
+  position: static;
 }
 
 /* Add a left border to the drawer code box that matches the footer top border */
@@ -40,7 +41,42 @@
 /* Dock code box to top/right/bottom by removing extra spacing inside */
 #drawer-content .drawer-code pre { margin: 0; }
 
-.codebox-bg { background: var(--codebox-background); }
+.codebox-bg { 
+  background: var(--codebox-background);
+  /* remove vertical padding so first/last lines dock to the top/bottom */
+  padding: 0;
+  white-space: pre;
+  position: relative;
+  overflow-x: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Line numbers */
+.line-number {
+  /* reserve fixed width and right-align so numbers line up vertically */
+  display: inline-block;
+  min-width: 2.2rem; /* space for up to 4-digit line numbers */
+  text-align: right;
+  margin-right: 0.75rem;
+  color: var(--syntax-comment-color);
+  user-select: none;
+  /* ensure digits use a fixed-width glyph for precise alignment */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Make punctuation/braces slightly more visible and heavier */
+.syntax-punctuation {
+  color: var(--syntax-punctuation-strong-color);
+  font-weight: 600;
+}
+
+/* Copy button anchored to the drawer viewport (top-right). Keep it outside the code scroll area. */
+#drawer-content .drawer-code .drawer-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 20;
+}
 
 /* Syntax highlighting using variables so colors adapt to mode */
 .syntax-keyword { color: var(--syntax-keyword-color); }

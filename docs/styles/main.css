@@ -1,6 +1,6 @@
 :root {
   --control-height: 38px;
-  --control-radius: 0.75rem;
+  --control-radius: 0.45rem;
   --header-height: 140px;
   --card-size: 140px;
   --symbol-color: #000000;
@@ -16,7 +16,7 @@
   /* Border / focus tokens */
   --border-subtle-light: rgba(0,0,0,0.08);
   --border-subtle-dark: rgba(255,255,255,0.08);
-  --border-subtle-darker: var(--border-subtle-darker);
+  --border-subtle-darker: rgba(255,255,255,0.12);
   --border-weak: rgba(0,0,0,0.06);
 
   --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.3);
@@ -118,7 +118,7 @@ body {
 .dark-mode .control-select {
   background: var(--bg-subtle-dark) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%239aa0a6' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
   background-size: 12px;
-  border-color: var(--border-subtle-dark);
+  border-color: var(--border-subtle-darker);
   color: #f8fafc;
 }
 
@@ -161,7 +161,7 @@ body {
 
 .dark-mode .color-selector {
   background: var(--bg-subtle-dark);
-  border-color: rgba(255,255,255,0.08);
+  border-color: var(--border-subtle-darker);
 }
 
 .color-selected {

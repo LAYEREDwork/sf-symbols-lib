@@ -105,100 +105,7 @@ function parseSymbolsData(
   return { symbolsData, viewBoxData };
 }
 
-/**
- * Generate the loader script that will be injected into the HTML
- */
-function generateLoaderScript(): string {
-  return `// Chunked data loader (auto-generated)
-      const CHUNKED_META_URL = './meta.json';
-      // Ensure safe globals exist on the global object without touching block-scoped bindings
-      globalThis.symbolNames = globalThis.symbolNames || {};
-      globalThis.allSymbolsData = globalThis.allSymbolsData || { hierarchical: {}, monochrome: {} };
-      globalThis.allViewBoxData = globalThis.allViewBoxData || { hierarchical: {}, monochrome: {} };
-      globalThis.CHUNKS = globalThis.CHUNKS || {};
-      globalThis.chunksLoaded = globalThis.chunksLoaded || { hierarchical: new Set(), monochrome: new Set() };
 
-        function normalizeChunkUrl(rawUrl) {
-          if (!rawUrl) return rawUrl;
-          if (rawUrl.startsWith('./') || rawUrl.startsWith('/')) return rawUrl;
-          return './' + rawUrl;
-        }
-
-        async function loadChunk(variant, index) {
-          // Skip if already loaded
-          if (globalThis.chunksLoaded[variant] && globalThis.chunksLoaded[variant].has(index)) return;
-          if (!globalThis.CHUNKS[variant] || !globalThis.CHUNKS[variant][index]) return;
-
-          const rawUrl = globalThis.CHUNKS[variant][index];
-          const url = normalizeChunkUrl(rawUrl);
-          try {
-            const res = await fetch(url);
-            const json = await res.json();
-            globalThis.allSymbolsData[variant] = globalThis.allSymbolsData[variant] || {};
-            globalThis.allViewBoxData[variant] = globalThis.allViewBoxData[variant] || {};
-            Object.assign(globalThis.allSymbolsData[variant], json.data || {});
-            Object.assign(globalThis.allViewBoxData[variant], json.viewBox || {});
-
-            // Mark chunk as loaded
-            if (!globalThis.chunksLoaded[variant]) globalThis.chunksLoaded[variant] = new Set();
-            globalThis.chunksLoaded[variant].add(index);
-
-            // Always call updateData after loading a chunk to refresh the display
-            if (typeof globalThis.updateData === 'function') {
-              try { globalThis.updateData(); } catch (err) { /* suppress update errors */ }
-            }
-          } catch (err) {
-            console.error('Failed to load chunk', url, err);
-          }
-        }
-
-        // Load all chunks for a variant sequentially to ensure progressive updates
-        async function loadAllChunksForVariant(variant) {
-          if (!globalThis.CHUNKS[variant]) return;
-          for (let i = 0; i < globalThis.CHUNKS[variant].length; i++) {
-            await loadChunk(variant, i);
-          }
-        }
-
-        async function initChunkedData() {
-          try {
-            const res = await fetch(CHUNKED_META_URL);
-            const meta = await res.json();
-            // Write safe globals to globalThis to avoid touching block-scoped module bindings
-            globalThis.VARIANTS = meta.VARIANTS || [];
-            globalThis.symbolNames = meta.symbolNames || {};
-            globalThis.CHUNKS = meta.chunks || {};
-
-            // Call updateData to re-render with the loaded symbol names
-            if (typeof globalThis.updateData === 'function') {
-              try { globalThis.updateData(); } catch (err) { /* suppress update errors */ }
-            }
-
-            const loaderVariants = globalThis.VARIANTS || [];
-            const defaultVariant = loaderVariants[0];
-
-            if (defaultVariant) {
-              // Use the existing variantSelect element declared in the page
-              if (typeof variantSelect !== 'undefined' && variantSelect) variantSelect.value = defaultVariant;
-
-              // Load all chunks for the default variant first (sequentially for progressive loading)
-              await loadAllChunksForVariant(defaultVariant);
-
-              // Then load remaining variants in the background
-              for (const variantName of loaderVariants) {
-                if (variantName !== defaultVariant) {
-                  loadAllChunksForVariant(variantName); // fire and forget for other variants
-                }
-              }
-            }
-          } catch (err) {
-            console.error('Failed to load chunked meta:', err);
-          }
-        }
-
-        // Start initialization asynchronously
-        initChunkedData();`;
-}
 
 /**
  * Read a markdown file and convert it to HTML
@@ -246,17 +153,7 @@ function minifyCss(htmlContent: string): string {
   return htmlContent;
 }
 
-/**
- * Minify JavaScript module content
- * Note: Script minification is disabled because Terser breaks template literals
- * containing HTML content (e.g., `<span>...</span>`). The CSS is still minified,
- * and the scripts are relatively small compared to the symbol data.
- */
-async function minifyScripts(htmlContent: string): Promise<string> {
-  // Script minification disabled - Terser corrupts template literals with HTML
-  // The original JS source remains readable and functional
-  return htmlContent;
-}
+
 
 /**
  * Write chunk files for a variant
@@ -396,19 +293,8 @@ async function main(): Promise<void> {
 
     console.log('✓ Injected markdown content (about.md, search.md)');
 
-    // Replace module import + initialization code in template with a small loader
-    const importPattern =
-      /const module = await import\('\.\/sf-symbols-data\.js'\);[\s\S]*?symbolNames = module\.sfSymbolNames \|\| \{\};/;
-    const loaderScript = generateLoaderScript();
-    htmlContent = htmlContent.replace(importPattern, loaderScript);
-
-    // Insert a small inline metadata stub before the main script tag
-    const inlineStub = `<script>/* meta will be fetched from ./meta.json */</script>`;
-    htmlContent = htmlContent.replace('<script type="module">', `${inlineStub}\n    <script type="module">`);
-
-    // Minify CSS and JavaScript
+    // Minify CSS
     htmlContent = minifyCss(htmlContent);
-    htmlContent = await minifyScripts(htmlContent);
 
     // Ensure dist directory exists
     await fs.mkdir(distDir, { recursive: true });
@@ -422,6 +308,14 @@ async function main(): Promise<void> {
     await fs.copyFile(path.join(repoDocsDir, 'styles', 'main.css'), path.join(stylesDir, 'main.css'));
     await fs.copyFile(path.join(repoDocsDir, 'styles', 'drawer.css'), path.join(stylesDir, 'drawer.css'));
     await fs.copyFile(path.join(repoDocsDir, 'styles', 'variables.css'), path.join(stylesDir, 'variables.css'));
+
+    // Copy JS files to dist/scripts/
+    const scriptsDir = path.join(distDir, 'scripts');
+    await fs.mkdir(scriptsDir, { recursive: true });
+    const scriptFiles = ['data.js', 'utils.js', 'theme.js', 'modals.js', 'colors.js', 'symbols.js', 'main.js'];
+    for (const file of scriptFiles) {
+      await fs.copyFile(path.join(repoDocsDir, 'scripts', file), path.join(scriptsDir, file));
+    }
 
     const totalSymbols = Object.keys(enumMap).length;
     const fileSize = (Buffer.byteLength(htmlContent, 'utf8') / 1024 / 1024).toFixed(1);

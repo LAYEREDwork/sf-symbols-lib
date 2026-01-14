@@ -11,4 +11,13 @@
   --syntax-operator-color: #5f6b77; /* subdued gray */
   --syntax-property-color: #3178c6; /* property blue */
   --syntax-punctuation-color: #667085; /* muted */
+  /* Strong punctuation (braces) accent used to emphasize `{}` */
+  --syntax-punctuation-strong-color: #475569; /* slightly stronger/darker */
 }
+
+/* Dark mode syntax highlighting */
+.dark-mode {
+  --codebox-background: #1a1a1a;
+  --syntax-comment-color: #9ca3af;
+  --syntax-punctuation-strong-color: #cbd5e1; /* light accent in dark mode */
+} 
