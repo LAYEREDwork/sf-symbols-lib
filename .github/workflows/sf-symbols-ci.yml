@@ -74,7 +74,10 @@ jobs:
         git commit -m "Update SF Symbols components and badge"
         git push
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     needs: generate
     steps:
     - uses: actions/checkout@v4
@@ -85,6 +88,7 @@ jobs:
     - run: npm ci
     - run: npm run build
     - uses: actions/upload-artifact@v4
+      if: matrix.os == 'ubuntu-latest'
       with:
         name: package-dist
         path: dist
