@@ -16,7 +16,9 @@
       "Bash(npm run generate:*)",
       "Bash(npm run check:*)",
       "Skill(cm)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(chmod:*)",
+      "Bash(source /Users/phranck/.zshrc)"
     ]
   }
 }
