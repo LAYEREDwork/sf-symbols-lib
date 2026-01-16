@@ -5,11 +5,11 @@
 
 # SF Symbols Library
 
-A React component library providing **6,984 SF Symbols** as type-safe React components. Supports multiple rendering variants (hierarchical, monochrome) with optimized bundle sizes through subpath imports.
+A React component library providing **7,007 SF Symbols** as type-safe React components. Supports multiple rendering variants (hierarchical, monochrome) with optimized bundle sizes through subpath imports.
 
 ## Features
 
-- **6,984 Symbols** - Complete SF Symbols collection
+- **7,007 Symbols** - Complete SF Symbols collection
 - **Type-Safe** - Full TypeScript support with autocomplete
 - **Tree-Shakeable** - Import only what you need
 - **Multiple Variants** - Hierarchical, Monochrome
@@ -215,7 +215,7 @@ if (isAvailableSymbol('checkmark.circle.fill')) {
 
 // Get all available symbols
 const allSymbols = getAvailableSymbols();
-console.log(`Total symbols: ${allSymbols.length}`); // 6984
+console.log(`Total symbols: ${allSymbols.length}`); // 7007
 ```
 
 ## Project Configuration
@@ -371,6 +371,22 @@ The generator creates:
 ## Contributing
 
 Bug reports and pull requests are welcome. Please use the GitHub issue tracker for bug reports or feature requests.
+
+## Disclaimer
+
+This is an **unofficial library** and is not affiliated with or endorsed by Apple Inc. All SF Symbols included in this library are copyrighted by Apple and are provided solely for reference and learning purposes.
+
+The symbols were manually exported from Apple's SF Symbols app using the built-in export functionality and then processed programmatically to create this React component library. The SVG designs from Apple SF Symbols are compiled into React components and cannot be modified separately.
+
+This library is a React wrapper around Apple's SF Symbols and does not modify or redistribute the original symbol designs in any way that violates Apple's terms.
+
+For official SF Symbols documentation and guidelines, visit [Apple's SF Symbols website](https://developer.apple.com/sf-symbols/).
+
+## Credits
+
+- **SF Symbols** are designed and maintained by Apple Inc.
+- This React component library was created to provide a convenient way to use SF Symbols in React applications.
+- Special thanks to the open-source community for feedback and contributions.
 
 ## License
 

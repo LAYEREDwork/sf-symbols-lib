@@ -230,28 +230,80 @@ export { SFSymbolSize } from './types/sizes';
 }
 
 /**
- * Update README.md with current symbol count badge
+ * Update README.md with current symbol count in badge and text
  */
-function updateReadmeBadge(symbolCount: number): void {
+function updateReadmeSymbolCount(symbolCount: number): void {
   const readmePath = path.join(process.cwd(), 'README.md');
 
   if (!fs.existsSync(readmePath)) {
-    console.log('⚠️  README.md not found, skipping badge update');
+    console.log('⚠️  README.md not found, skipping update');
     return;
   }
 
   let content = fs.readFileSync(readmePath, 'utf-8');
+  const formattedCount = symbolCount.toLocaleString();
 
+  // Update badge
   const badgeUrl = `https://img.shields.io/badge/SF%20Symbols-${symbolCount}-blue?style=flat-square&logo=apple&logoColor=white`;
   const badgeMarkdown = `![SF Symbols](${badgeUrl})`;
-
   const badgePattern = /!\[SF Symbols\]\([^)]+\)/;
   if (badgePattern.test(content)) {
     content = content.replace(badgePattern, badgeMarkdown);
   }
 
+  // Update description line with formatted count (e.g., "6,984 SF Symbols")
+  content = content.replace(
+    /A React component library providing \*\*[\d,]+\s+SF Symbols\*\*/,
+    `A React component library providing **${formattedCount} SF Symbols**`
+  );
+
+  // Update feature bullet point (e.g., "**6,984 Symbols**")
+  content = content.replace(
+    /^- \*\*[\d,]+\s+Symbols\*\*/m,
+    `- **${formattedCount} Symbols**`
+  );
+
+  // Update code comment (e.g., "// 6984")
+  content = content.replace(
+    /console\.log\(`Total symbols: \$\{allSymbols\.length\}`\); \/\/ [\d,]+/,
+    `console.log(\`Total symbols: \${allSymbols.length}\`); // ${symbolCount}`
+  );
+
   fs.writeFileSync(readmePath, content);
-  console.log(`✅ UPDATED: README.md badge with ${symbolCount} symbols`);
+  console.log(`✅ UPDATED: README.md with ${symbolCount} symbols`);
+}
+
+/**
+ * Update package.json description with current symbol count
+ */
+function updatePackageJsonSymbolCount(symbolCount: number): void {
+  const packageJsonPath = path.join(process.cwd(), 'package.json');
+
+  if (!fs.existsSync(packageJsonPath)) {
+    console.log('⚠️  package.json not found, skipping update');
+    return;
+  }
+
+  const packageJsonContent = fs.readFileSync(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonContent);
+
+  if (packageJson.description) {
+    packageJson.description = packageJson.description.replace(
+      /SF Symbols \([\d,]+\) React components library/,
+      `SF Symbols (${symbolCount.toLocaleString()}) React components library`
+    );
+
+    // If no previous count format found, add it
+    if (!packageJson.description.includes(`(${symbolCount.toLocaleString()})`)) {
+      packageJson.description = packageJson.description.replace(
+        /SF Symbols React components library/,
+        `SF Symbols (${symbolCount.toLocaleString()}) React components library`
+      );
+    }
+  }
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+  console.log(`✅ UPDATED: package.json description with ${symbolCount} symbols`);
 }
 
 /**
@@ -325,8 +377,9 @@ async function generateSFSymbols() {
   // Generate main index.ts
   generateMainIndex(srcDir);
 
-  // Update README badge
-  updateReadmeBadge(symbolFileNames.length);
+  // Update README and package.json with symbol count
+  updateReadmeSymbolCount(symbolFileNames.length);
+  updatePackageJsonSymbolCount(symbolFileNames.length);
 
   // Generate docs data and preview page
   console.log('\n📄 Generating docs data and preview page...');
