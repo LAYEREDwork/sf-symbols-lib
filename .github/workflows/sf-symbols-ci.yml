@@ -89,7 +89,7 @@ jobs:
         name: package-dist
         path: dist
 
-  gh-pages:
+  update-pages:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -113,7 +113,7 @@ jobs:
         path: docs/dist
     - uses: actions/deploy-pages@v4
 
-  publish:
+  publish-npm:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
