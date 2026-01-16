@@ -126,11 +126,12 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: '22'
-        cache: 'npm'
+        registry-url: 'https://registry.npmjs.org'
     - run: npm ci
     - uses: actions/download-artifact@v4
       with:
         name: package-dist
         path: dist
-    - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
-    - run: npm publish
+    - run: npm publish --provenance
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
