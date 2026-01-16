@@ -89,7 +89,7 @@ jobs:
         name: package-dist
         path: dist
 
-  deploy:
+  gh-pages:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
