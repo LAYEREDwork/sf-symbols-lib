@@ -92,7 +92,7 @@ export function renderSymbols() {
         existingPopovers.forEach(p => p.remove());
         
         // Use Bootstrap popover
-        const isDark = document.body.classList.contains('dark-mode');
+        const isDark = document.documentElement.classList.contains('soft-dark');
         const popover = new bootstrap.Popover(infoIcon, {
           content: 'This symbol may not be modified and may only be used to refer to Apple\'s Markup feature.',
           placement: 'top',
@@ -278,9 +278,9 @@ export function renderDrawerContent() {
   leftCol.style.justifyContent = 'center';
 
   const previewBox = document.createElement('div');
+  previewBox.className = 'drawer-preview-box';
   previewBox.style.width = '180px';
   previewBox.style.height = '180px';
-  previewBox.style.border = '1px solid rgba(0,0,0,0.12)';
   previewBox.style.borderRadius = '8px';
   previewBox.style.display = 'flex';
   previewBox.style.alignItems = 'center';
@@ -288,7 +288,6 @@ export function renderDrawerContent() {
   // 40px margin around the SF Symbol inside the preview box
   previewBox.style.padding = '40px';
   previewBox.style.boxSizing = 'border-box';
-  previewBox.style.background = 'transparent';
 
   const svgKey = state.selectedSymbolKey;
   if (currentData[svgKey]) {
@@ -296,7 +295,7 @@ export function renderDrawerContent() {
     // Always force fill for consistency
     const shouldForcePreviewFill = true;
     previewBox.innerHTML = shouldForcePreviewFill
-      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" fill="${currentColor}" width="100%" height="100%">${currentData[svgKey]}</svg>`
+      ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" fill="currentColor" width="100%" height="100%">${currentData[svgKey]}</svg>`
       : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}" width="100%" height="100%">${currentData[svgKey]}</svg>`;
   } else {
     previewBox.textContent = 'SFSym';

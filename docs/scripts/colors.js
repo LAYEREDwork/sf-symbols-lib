@@ -25,11 +25,6 @@ export function initColorSelector() {
   themeOption.className = 'color-option';
   themeOption.dataset.color = 'currentColor';
   themeOption.title = 'Theme color (currentColor)';
-  themeOption.style.display = 'flex';
-  themeOption.style.alignItems = 'center';
-  themeOption.style.justifyContent = 'center';
-  themeOption.style.fontSize = '10px';
-  themeOption.style.color = 'inherit';
   themeOption.textContent = 'T';
   if (currentColor === 'currentColor') themeOption.classList.add('selected');
   themeOption.addEventListener('click', () => { selectColor('currentColor'); closeColorDropdown(); });
@@ -91,7 +86,7 @@ export function updateColorDisplay() {
   if (currentColor === 'currentColor') {
     // Visual indicator for theme-aware selection
     colorSelected.style.background = 'transparent';
-    colorSelected.style.border = '2px dashed rgba(0,0,0,0.12)';
+    colorSelected.style.setProperty('border', '2px dashed var(--border-muted)');
     colorSelected.textContent = 'T';
     colorSelected.style.color = 'inherit';
   } else {
@@ -107,14 +102,16 @@ export function closeColorDropdown() {
 
 // Update symbol color
 export function updateColor() {
-  // If using the special 'currentColor' token, set the CSS custom property
-  // to the literal 'currentColor' so SVGs inherit the theme-aware color.
+  // If using the special 'currentColor' token, set the color based on the current theme
   if (currentColor === 'currentColor') {
-    document.documentElement.style.setProperty('--symbol-color', 'currentColor');
+    // Get the current theme-aware color from CSS variables
+    const isDarkMode = document.documentElement.classList.contains('soft-dark');
+    const themeColor = isDarkMode ? '#c9d1d9' : '#24292e';
+    document.documentElement.style.setProperty('--symbol-color', themeColor);
   } else {
     document.documentElement.style.setProperty('--symbol-color', currentColor);
   }
-  updateThemeIcon(document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+  updateThemeIcon(document.documentElement.classList.contains('soft-dark') ? 'soft-dark' : 'light');
 }
 
 // Initialize

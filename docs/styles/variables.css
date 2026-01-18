@@ -16,8 +16,16 @@
 }
 
 /* Dark mode syntax highlighting */
-.dark-mode {
-  --codebox-background: #1a1a1a;
-  --syntax-comment-color: #9ca3af;
-  --syntax-punctuation-strong-color: #cbd5e1; /* light accent in dark mode */
+:root.soft-dark {
+  --codebox-background: #0d1117;
+  --syntax-keyword-color: #58a6ff;
+  --syntax-string-color: #85e89d;
+  --syntax-component-color: #79c0ff;
+  --syntax-comment-color: #8b949e;
+  --syntax-number-color: #d29922;
+  --syntax-constant-color: #79c0ff;
+  --syntax-operator-color: #8b949e;
+  --syntax-property-color: #79c0ff;
+  --syntax-punctuation-color: #c9d1d9;
+  --syntax-punctuation-strong-color: #c9d1d9; /* light accent in dark mode */
 } 

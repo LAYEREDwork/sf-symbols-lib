@@ -31,11 +31,7 @@
 
 /* Add a left border to the drawer code box that matches the footer top border */
 #drawer-content .drawer-code {
-  border-left: 1px solid var(--border-weak);
-}
-
-.dark-mode #drawer-content .drawer-code {
-  border-left-color: var(--border-subtle-dark);
+  border-left: 1px solid var(--border-subtle);
 }
 
 /* Dock code box to top/right/bottom by removing extra spacing inside */
@@ -76,6 +72,13 @@
   top: 0.5rem;
   right: 0.5rem;
   z-index: 20;
+}
+
+/* Preview box for symbol display */
+.drawer-preview-box {
+  border: 1px solid var(--border-muted);
+  background: var(--bg-secondary);
+  color: var(--symbol-color);
 }
 
 /* Syntax highlighting using variables so colors adapt to mode */

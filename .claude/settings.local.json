@@ -18,7 +18,27 @@
       "Skill(cm)",
       "Bash(grep:*)",
       "Bash(chmod:*)",
-      "Bash(source /Users/phranck/.zshrc)"
+      "Bash(source /Users/phranck/.zshrc)",
+      "WebFetch(domain:unpkg.com)",
+      "WebFetch(domain:github.blog)",
+      "WebSearch",
+      "WebFetch(domain:primer.style)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.designpieces.com)",
+      "WebFetch(domain:stylishthemes.github.io)",
+      "WebFetch(domain:css-tricks.com)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(npm run docs:preview:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:styleguide.github.com)",
+      "WebFetch(domain:atmos.style)",
+      "WebFetch(domain:docs.github.com)",
+      "WebFetch(domain:brandpalettes.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:gist.github.com)",
+      "Bash(npm run docs:generate:*)",
+      "Bash(curl:*)"
     ]
   }
 }
