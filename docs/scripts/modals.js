@@ -134,8 +134,7 @@ function animateAboutModalHeight(startHeight) {
   aboutModal.style.height = startHeight + 'px';
 
   // Force browser to apply the height
-  // eslint-disable-next-line no-unused-expressions
-  aboutModal.offsetHeight;
+  void aboutModal.offsetHeight;
 
   // Now enable the transition and animate to new height
   aboutModal.style.transition = 'height 350ms cubic-bezier(0.2, 0.9, 0.2, 1)';

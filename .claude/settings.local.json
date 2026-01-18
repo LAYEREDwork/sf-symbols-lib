@@ -38,7 +38,8 @@
       "WebFetch(domain:www.npmjs.com)",
       "WebFetch(domain:gist.github.com)",
       "Bash(npm run docs:generate:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npm run lint)"
     ]
   }
 }
