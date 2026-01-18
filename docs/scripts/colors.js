@@ -106,7 +106,7 @@ export function updateColor() {
   if (currentColor === 'currentColor') {
     // Get the current theme-aware color from CSS variables
     const isDarkMode = document.documentElement.classList.contains('soft-dark');
-    const themeColor = isDarkMode ? '#c9d1d9' : '#24292e';
+    const themeColor = isDarkMode ? '#adbac7' : '#24292e';
     document.documentElement.style.setProperty('--symbol-color', themeColor);
   } else {
     document.documentElement.style.setProperty('--symbol-color', currentColor);

@@ -15,17 +15,17 @@
   --syntax-punctuation-strong-color: #475569; /* slightly stronger/darker */
 }
 
-/* Dark mode syntax highlighting */
+/* Dark Dimmed mode syntax highlighting */
 :root.soft-dark {
-  --codebox-background: #0d1117;
-  --syntax-keyword-color: #58a6ff;
-  --syntax-string-color: #85e89d;
-  --syntax-component-color: #79c0ff;
-  --syntax-comment-color: #8b949e;
-  --syntax-number-color: #d29922;
-  --syntax-constant-color: #79c0ff;
-  --syntax-operator-color: #8b949e;
-  --syntax-property-color: #79c0ff;
-  --syntax-punctuation-color: #c9d1d9;
-  --syntax-punctuation-strong-color: #c9d1d9; /* light accent in dark mode */
+  --codebox-background: #22272e;
+  --syntax-keyword-color: #539bf5;
+  --syntax-string-color: #96d0ff;
+  --syntax-component-color: #6cb6ff;
+  --syntax-comment-color: #768390;
+  --syntax-number-color: #f69d50;
+  --syntax-constant-color: #6cb6ff;
+  --syntax-operator-color: #768390;
+  --syntax-property-color: #6cb6ff;
+  --syntax-punctuation-color: #adbac7;
+  --syntax-punctuation-strong-color: #adbac7; /* light accent in dark mode */
 } 

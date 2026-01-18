@@ -17,6 +17,7 @@
   --bg-secondary: #f6f8fa;
   --bg-subtle: #f6f8fa;
   --bg-overlay: #ffffff;
+  --bg-inset: #f6f8fa;
 
   /* Text / Foreground colors */
   --fg-default: #24292e;
@@ -46,40 +47,41 @@
   --accent-orange: #bf8700;
 }
 
-/* SOFT-DARK-THEME (GitHub "Dimmed") */
+/* SOFT-DARK-THEME (GitHub "Dark Dimmed") */
 :root.soft-dark {
   /* Background colors */
-  --bg-primary: #0d1117;
-  --bg-secondary: #161b22;
-  --bg-subtle: #21262d;
-  --bg-overlay: #0d1117;
+  --bg-primary: #22272e;
+  --bg-secondary: #2d333b;
+  --bg-subtle: #2d333b;
+  --bg-overlay: #22272e;
+  --bg-inset: #1c2128;
 
   /* Text / Foreground colors */
-  --fg-default: #c9d1d9;
-  --fg-muted: #8b949e;
-  --fg-subtle: #6e7681;
+  --fg-default: #adbac7;
+  --fg-muted: #768390;
+  --fg-subtle: #636e7b;
   --fg-onEmphasis: #ffffff;
 
   /* Border colors */
-  --border-default: #30363d;
-  --border-muted: #21262d;
-  --border-subtle: #444c56;
+  --border-default: #444c56;
+  --border-muted: #373e47;
+  --border-subtle: #2d333b;
 
   /* Frosted glass effects */
-  --frosted-bg: rgba(13,17,23,0.92);
-  --frosted-border: #30363d;
+  --frosted-bg: rgba(34,39,46,0.92);
+  --frosted-border: #444c56;
   --frosted-shadow: 0 6px 18px rgba(0,0,0,0.08);
   --frosted-shadow-bottom: 0 -6px 18px rgba(0,0,0,0.08);
 
   /* Focus & semantic colors */
-  --focus-ring: 0 0 0 3px rgba(88, 166, 255, 0.3);
-  --focus-ring-border: #58a6ff;
+  --focus-ring: 0 0 0 3px rgba(83, 155, 245, 0.3);
+  --focus-ring-border: #539bf5;
 
   /* Accent colors */
-  --accent-blue: #58a6ff;
-  --accent-green: #3fb950;
-  --accent-red: #f85149;
-  --accent-orange: #fb8500;
+  --accent-blue: #539bf5;
+  --accent-green: #57ab5a;
+  --accent-red: #e5534b;
+  --accent-orange: #cc6b2c;
 }
 
 /* During theme switching temporarily disable transitions to avoid expensive painted animations */
@@ -97,14 +99,13 @@ body {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
-/* Frosted header */
+/* Header */
 .frosted-header {
-  background-color: var(--frosted-bg);
-  backdrop-filter: var(--frosted-blur);
+  background-color: var(--bg-inset);
   display: flex;
   flex-direction: column;
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--frosted-border);
+  border-bottom: 1px solid var(--border-default);
   gap: 0.75rem;
 }
 
@@ -209,7 +210,6 @@ body {
   right: auto;
   transform: translate(-50%, -10px);
   background: var(--bg-primary);
-  backdrop-filter: blur(8px);
   border-radius: var(--control-radius);
   border: 1px solid var(--border-subtle);
   padding: 0.75rem;
@@ -562,10 +562,8 @@ body {
   bottom: 0;
   height: var(--drawer-height);
   width: 100%;
-  background: var(--frosted-bg);
-  backdrop-filter: var(--frosted-blur);
-  border-top: 1px solid var(--frosted-border);
-  box-shadow: var(--frosted-shadow-bottom);
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-default);
   transform: translateY(100%);
   transition: transform 360ms cubic-bezier(.2,.8,.2,1);
   z-index: 1040;
@@ -713,7 +711,7 @@ body.drawer-open #bottom-drawer {
   width: var(--card-size);
   height: var(--card-size);
   background-color: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
+  border: none;
   border-radius: 1rem;
   display: flex;
   justify-content: center;
@@ -797,16 +795,14 @@ body.drawer-open .card {
 
 /* Footer */
 .site-footer {
-  background-color: var(--frosted-bg);
-  backdrop-filter: var(--frosted-blur);
+  background-color: var(--bg-inset);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0.75rem 2rem;
   min-height: var(--footer-height);
-  border-top: 1px solid var(--frosted-border);
+  border-top: 1px solid var(--border-default);
   color: var(--fg-default);
-  box-shadow: var(--frosted-shadow);
   transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }
 
@@ -838,7 +834,6 @@ body.drawer-open .card {
   pointer-events: none;
   transition: opacity 260ms ease, transform 260ms ease;
   z-index: 1100;
-  backdrop-filter: var(--frosted-blur);
   max-width: 90%;
   text-align: center;
   border: 1px solid var(--border-subtle);
