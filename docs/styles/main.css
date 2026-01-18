@@ -105,7 +105,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 1rem 2rem;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-muted);
   gap: 0.75rem;
 }
 
@@ -801,7 +801,7 @@ body.drawer-open .card {
   justify-content: center;
   padding: 0.75rem 2rem;
   min-height: var(--footer-height);
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--border-muted);
   color: var(--fg-default);
   transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
 }
