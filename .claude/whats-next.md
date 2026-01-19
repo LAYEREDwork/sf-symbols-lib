@@ -1,201 +1,388 @@
-# SF Symbols Library - Progress Bar Implementation - Handoff
+# SF Symbols Library - GitHub Theme Implementation Handoff
 
-```xml
-<original_task>
-Implementiere einen schmalen Progressbar am unteren Rand des Browserfensters in der `docs` Demo Page, der sich über die ganze Fensterbreite erstreckt und den Fortschritt beim Laden der Chunks anzeigt. Wenn er erscheint, soll er von unten hereinsliden, und wenn er verschwindet, soll er nach unten heraussliden. Verwende einen Bootstrap Progressbar.
-</original_task>
+## Original Task
 
-<work_completed>
-## Implementierung des Progress-Bars
+User requested to implement GitHub's "Soft-Dark" (Dark Dimmed) theme for the SF Symbols Library documentation/showcase page, matching GitHub's exact visual appearance.
 
-### 1. HTML-Änderungen (`docs/index.html`)
-- Progress-Bar-Element in den Header integriert (am Ende des `<header>` Elements, vor dem schließenden `</header>`-Tag)
-- Struktur:
-  ```html
-  <!-- Progress bar for chunk loading -->
-  <div id="chunk-progress-container" class="chunk-progress-container">
-    <div class="progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Chunk loading progress">
-      <div id="chunk-progress-bar" class="progress-bar" style="width: 0%"></div>
-    </div>
-  </div>
-  ```
-- Position: Im Header, an der Unterkante (nicht mehr am Browser-Fenster-Rand, da dies zu viel optische Unruhe verursachte)
+## Work Completed
 
-### 2. CSS-Styling (`docs/styles/main.css`, ab Zeile 1017)
-- `#chunk-progress-container`:
-  - Position: `absolute` (relativ zum Header)
-  - Größe: Vollbreite, 3px Höhe
-  - Z-Index: 1031 (über Header-Content)
-  - Animation: `scaleY` statt `translateY` für sanftere Präsentation
-  - Easing: `cubic-bezier(0.25, 0.46, 0.45, 0.94)` für weiche Bewegung
-  - Transition: **450ms** (erhöht von 200ms für weniger ruckelhafte Animation)
+### 1. Theme System Implementation
 
-- Light Mode Farben:
-  - Gradient: `#3b82f6` → `#60a5fa` (helles Blau, ähnlich Dark Mode für Konsistenz)
-  - Box-Shadow: `0 2px 8px rgba(59, 130, 246, 0.5)`
+#### Core Theme Architecture
+- **File**: `/docs/styles/main.css`
+  - Lines 1-47: Light theme CSS variables (GitHub Light)
+  - Lines 50-83: Dark Dimmed theme CSS variables (`:root.soft-dark`)
+  - Replaced all `.dark-mode` class references with `:root.soft-dark` pattern
 
-- Dark Mode Farben:
-  - Gradient: `#60a5fa` → `#93c5fd` (helleres Blau)
-  - Box-Shadow: `0 2px 8px rgba(96, 165, 250, 0.5)`
-
-### 3. JavaScript-Logik (`docs/scripts/main.js`)
-- **Globale Variablen** (Zeile 114-117):
-  - `totalChunksToLoad`: Gesamtanzahl aller Chunks aller Varianten
-  - `chunksLoadedCount`: Zähler der bereits geladenen Chunks
-  - `progressBarShownTime`: Zeitstempel wann Progress-Bar angezeigt wurde
-
-- **Hilfsfunktionen**:
-  - `updateProgressBar(percentage)`: Setzt Breite der Progress-Bar basierend auf Prozentsatz
-  - `showProgressBar()`: Zeigt Progress-Bar mit `classList.add('show')`
-  - `hideProgressBar()`:
-    - Stellt sicher, dass Progress-Bar **mindestens 800ms sichtbar bleibt**
-    - Wartet dann zusätzlich 300ms vor der Slide-out-Animation
-    - Berechnet Verzögerung basierend auf verstrichener Zeit
-
-- **Chunk-Loading-Updates** (in `loadChunk()`):
-  - Nach erfolgreichem Laden eines Chunks: `chunksLoadedCount++`
-  - Berechnet Fortschritt: `Math.min(100, Math.round((chunksLoadedCount / totalChunksToLoad) * 100))`
-  - Ruft `updateProgressBar()` auf
-
-- **Initialisierungslogik** (in `initChunkedData()`):
-  - Zählt **alle Chunks aller Varianten** (nicht nur Standard-Variante):
-    ```javascript
-    for (const variantName of VARIANTS) {
-      if (CHUNKS[variantName]) {
-        totalChunksToLoad += CHUNKS[variantName].length;
-      }
-    }
-    ```
-  - Standard-Variante wird **sequenziell** geladen (für schnelle UI-Updates)
-  - Andere Varianten werden **parallel** geladen im Hintergrund
-  - Wartet auf **alle Varianten** mit `Promise.all()` bevor Progress-Bar versteckt wird
-
-## Iterationen und Anpassungen
-
-1. **Initial**: Progress-Bar am Browser-Fenster-Rand unten
-   - Problem: Zu viel optische Unruhe, kaum sichtbar im Light Mode
-
-2. **Versuch 2**: Progress-Bar ganz oben
-   - Problem: Noch schlechter sichtbar wegen Header-Content Ablenkung
-
-3. **Final**: Progress-Bar in Header-Unterkante
-   - Lösung: Cleaner, weniger ablenkend, besser integriert
-
-4. **Farb-Anpassung**:
-   - Initial Light Mode: Zu helles Blau
-   - Final: Gleicher Gradient wie Dark Mode (bessere Sichtbarkeit und Konsistenz)
-
-5. **Animation-Verbesserung**:
-   - Initial: 200ms Transition mit schnellerem Easing → ruckelhaft
-   - Final: 450ms Transition mit weicherem `cubic-bezier(0.25, 0.46, 0.45, 0.94)` → fließend
-</work_completed>
-
-<work_remaining>
-Nichts. Die Implementierung ist komplett und funktioniert wie gewünscht:
-- Progress-Bar ist sichtbar beim Laden der Chunks
-- Animation ist flüssig (von unten in Header reinsliden, nach oben raussliden)
-- Farbgebung ist in Light und Dark Mode angepasst
-- Mindestanzeigedauer sorgt dafür, dass man den Fortschritt sehen kann
-- Progress-Bar wird nur angezeigt, wenn Chunks zu laden sind
-
-Optional könnten in Zukunft noch Verbesserungen erfolgen (nicht gefordert):
-- Indeterminate State wenn Varianten-Chunks im Hintergrund laden
-- Unterschiedliche Farben für verschiedene Phasen (default vs. background variants)
-</work_remaining>
-
-<attempted_approaches>
-1. **Schnellere Animation (200ms)**:
-   - Versuch: Schnellere Transition für responsives Feedback
-   - Problem: Animation wirkte ruckelhaft, da Chunks sequenziell geladen werden
-   - Lösung: Auf 450ms erhöht mit weicherem Easing
-
-2. **Position am Browser-Fenster-Rand (unten)**:
-   - Versuch: Globale Fixed-Position am unteren Rand des Fensters
-   - Problem: Zu viel optische Unruhe, kaum sichtbar im Light Mode
-   - Lösung: In Header integriert (absolute Positioning relativ zu Header)
-
-3. **Position ganz oben am Fenster**:
-   - Versuch: Fixed-Position oben
-   - Problem: Zu viel Ablenkung durch Header-Content
-   - Lösung: Zurück zum Header-Ansatz
-
-4. **Animation mit `translateY`**:
-   - Versuch: `translateY(-100%)` → `translateY(0)` für Slide-In von oben
-   - Problem: Nicht so elegant
-   - Lösung: `scaleY(0)` → `scaleY(1)` für organischeres Ein-/Ausfahren
-
-5. **Light Mode Farbe dunkelblau**:
-   - Versuch: Initial `#3b82f6` → `#1e40af`
-   - Problem: Zu konservativ, kein Gradient-Effekt
-   - Lösung: Gleicher Gradient wie Dark Mode (`#3b82f6` → `#60a5fa`)
-
-6. **Nur Default-Variante zählen**:
-   - Versuch: Nur Chunks der Standard-Variante in Progress-Bar
-   - Problem: Hintergrund-Varianten werden nicht berücksichtigt
-   - Lösung: Alle Chunks aller Varianten zählen und mit `Promise.all()` warten
-</attempted_approaches>
-
-<critical_context>
-## Projektstruktur
-- **React/TypeScript Library** zur Anzeige von SF Symbols (SVG-Icons)
-- Demo befindet sich in `docs/` mit Vanilla JavaScript (nicht React-basiert)
-- Bootstrap 5.3.2 ist in der Demo eingebunden (über CDN)
-
-## Chunk-Loading-System
-- **Meta-Daten**: Geladen aus `docs/dist/meta.json`
-- **Chunk-Dateien**: Liegen in `docs/dist/chunks/`
-  - z.B. `hierarchical-0.json` bis `hierarchical-14.json` (15 Chunks)
-  - z.B. `monochrome-0.json` bis `monochrome-13.json` (14 Chunks)
-  - Gesamt: **29 Chunks** (15 + 14)
-- **Ladelogik**:
-  - Standard-Variante (hierarchical) wird **sequenziell** geladen (blockierend für UI)
-  - Andere Varianten (monochrome) werden **parallel** im Hintergrund geladen
-  - Nach jedem Chunk wird `updateData()` aufgerufen für Live-UI-Updates
-
-## Wichtige Details
-- Progress-Bar wird nur angezeigt, wenn `totalChunksToLoad > 0`
-- Mindestanzeigedauer: **800ms** (damit man den Fortschritt auch sieht)
-- Nach Laden aller Chunks: **300ms** zusätzliche Wartezeit vor Slide-out-Animation
-- Z-Index: 1031 (über Header-Content, unter Modals auf 2000+)
-- Responsive Design: Funktioniert auf allen Bildschirmgrößen (Header ist bereits responsive)
-
-## Header-Struktur
-- `<header class="frosted-header">` mit `position: fixed; top: 0; left: 0; right: 0; z-index: 1030`
-- Progress-Bar hat `position: absolute; bottom: 0` (relativ zum Header)
-- Header-Höhe ist 140px (CSS-Variable `--header-height`)
-
-## Browser-Kompatibilität
-- Nutzt CSS Transitions und Transforms (breit unterstützt)
-- CSS Grid für die Header-Layouts
-- Linear-Gradient für Farbeffekte
-- Aria-Attribute für Accessibility (`role="progressbar"`, `aria-valuenow`, etc.)
-</critical_context>
-
-<current_state>
-## Deliverables: ✅ KOMPLETT
-
-### Dateien bearbeitet:
-1. ✅ `docs/index.html` - Progress-Bar-Element im Header hinzugefügt
-2. ✅ `docs/styles/main.css` - Vollständiges Styling mit Light/Dark Mode Support
-3. ✅ `docs/scripts/main.js` - Progress-Tracking-Logik implementiert
-
-### Funktionalität:
-✅ Progress-Bar wird beim Laden angezeigt
-✅ Fortschritt wird korrekt berechnet (alle Varianten)
-✅ Animation ist flüssig (450ms mit weichem Easing)
-✅ Mindestanzeigedauer von 800ms implementiert
-✅ Light & Dark Mode Support
-✅ Responsiv
-✅ Accessibility (ARIA-Attribute)
-✅ Hard-Refresh zeigt keine Fehler in Console
-
-### Visuelles Ergebnis:
-- Progress-Bar sitzt elegant an der Unterkante des Headers
-- Farbgebung in beiden Modi gut sichtbar und ansprechend
-- Animation ist sanft und nicht ruckelhaft
-- Keine optische Unruhe, gut integriert in das Design
-
-## Status
-**FERTIG UND GETESTET** - Alle Anforderungen erfüllt und über mehrere Iterationen optimiert.
-</current_state>
+#### Color Palette - Light Theme
+```css
+--bg-primary: #ffffff
+--bg-secondary: #f6f8fa
+--bg-inset: #f6f8fa (for header/footer)
+--fg-default: #24292e
+--fg-muted: #57606a
+--border-default: #d0d7de
+--border-muted: #eaeef2
+--accent-blue: #0969da
+--accent-green: #1f883d
+--accent-red: #d1242f
 ```
+
+#### Color Palette - Dark Dimmed Theme
+```css
+--bg-primary: #22272e
+--bg-secondary: #2d333b
+--bg-inset: #1c2128 (darker for header/footer)
+--fg-default: #adbac7
+--fg-muted: #768390
+--border-default: #444c56
+--border-muted: #373e47
+--accent-blue: #539bf5
+--accent-green: #57ab5a
+--accent-red: #e5534b
+```
+
+**Important**: Initially used GitHub "Dark" theme colors (e.g., `#0d1117`, `#c9d1d9`) which were too dark/contrasty. User corrected this to use the softer "Dark Dimmed" palette.
+
+### 2. Theme Switching Logic
+
+#### Files Modified:
+- **`/docs/scripts/theme.js`** (48 lines)
+  - Line 2: Added `import { updateColor } from './colors.js'`
+  - Line 16-18: Changed from `body.dark-mode` to `documentElement.soft-dark`
+  - Line 23: Calls `updateColor()` when theme switches
+  - Line 42-47: Theme detection and initialization
+
+- **`/docs/scripts/colors.js`** (123 lines)
+  - Line 109: Theme-aware symbol color calculation
+    - Light: `#24292e`
+    - Dark: `#adbac7`
+  - Line 89: Border color using CSS variables instead of hardcoded `rgba(0,0,0,0.12)`
+  - Lines 24-28: Removed redundant inline styles (now handled by CSS)
+
+- **`/docs/scripts/symbols.js`** (553 lines)
+  - Line 95: Fixed Bootstrap popover dark mode detection
+    - Changed: `document.body.classList.contains('dark-mode')`
+    - To: `document.documentElement.classList.contains('soft-dark')`
+  - Line 299: Fixed drawer preview SVG fill attribute
+    - Changed: `fill="${currentColor}"` (JavaScript variable)
+    - To: `fill="currentColor"` (SVG literal for CSS inheritance)
+  - Line 281: Added `className='drawer-preview-box'` for CSS styling
+
+### 3. Syntax Highlighting
+
+#### File: `/docs/styles/variables.css` (31 lines)
+- Line 19: Changed `.dark-mode` to `:root.soft-dark`
+- Updated all syntax colors for Dark Dimmed theme:
+  - `--codebox-background: #22272e` (was `#0d1117`)
+  - `--syntax-keyword-color: #539bf5` (was `#58a6ff`)
+  - `--syntax-string-color: #96d0ff`
+  - `--syntax-component-color: #6cb6ff`
+  - `--syntax-comment-color: #768390`
+  - `--syntax-punctuation-color: #adbac7`
+
+### 4. Visual Refinements
+
+#### Removed Frosted Glass Effects
+- **Header** (`.frosted-header` line 103-110):
+  - Removed `backdrop-filter: blur(8px)`
+  - Changed to solid `background-color: var(--bg-inset)`
+
+- **Footer** (`.site-footer` line 797-807):
+  - Removed `backdrop-filter` and `box-shadow`
+  - Changed to solid `background-color: var(--bg-inset)`
+
+- **Bottom Drawer** (`#bottom-drawer` line 557-571):
+  - Removed `backdrop-filter` and `box-shadow`
+  - Solid background
+
+- **Color Dropdown** (line 210-224):
+  - Removed `backdrop-filter: blur(8px)`
+
+- **Toast Notification** (line 820-838):
+  - Removed `backdrop-filter`
+
+#### Card Styling
+- **Line 714**: Removed card borders
+  - Changed: `border: 1px solid var(--border-subtle)`
+  - To: `border: none`
+  - Both Light and Dark modes now borderless
+
+#### Header/Footer Borders
+- **Line 108**: Header border color softened to `var(--border-muted)`
+- **Line 804**: Footer border color softened to `var(--border-muted)`
+- Creates subtle separation without harsh lines
+
+### 5. Color Picker Fixes
+
+#### File: `/docs/styles/main.css`
+- **Line 283-300**: `.color-option` CSS
+  - Added flexbox centering: `display: flex; align-items: center; justify-content: center`
+  - Increased size: 20px → 28px
+  - Font: `13px`, `font-weight: 700`
+  - Color: `var(--fg-default)`
+
+- **Line 190-203**: `.color-selected` CSS
+  - Added flexbox centering properties
+  - Font: `11px`, `font-weight: 700`, `line-height: 1`
+  - Properly centers the "T" indicator
+
+#### File: `/docs/scripts/colors.js`
+- Line 28: Removed all inline styles from theme option creation
+- CSS now handles all styling via `.color-option` class
+
+### 6. Bug Fixes
+
+#### Search Input Focus Issue
+- **File**: `/docs/styles/main.css` (Line 597-603)
+- Problem: Search input turned white on focus in dark mode
+- Solution: Added explicit background/color on `:focus`
+  ```css
+  .search-input:focus {
+    background-color: var(--bg-secondary);
+    color: var(--fg-default);
+  }
+  ```
+
+#### Symbol Colors Not Updating
+- **Root Cause**: Three issues found and fixed:
+  1. `colors.js` used `currentColor` CSS value causing circular reference
+  2. `theme.js` didn't call `updateColor()` on theme change
+  3. `symbols.js` checked wrong class for dark mode detection
+
+- **Solution**:
+  - `colors.js` line 109: Calculate actual hex color based on theme
+  - `theme.js` line 23: Call `updateColor()` after theme switch
+  - `symbols.js` line 95: Check `documentElement.soft-dark` instead of `body.dark-mode`
+
+#### Drawer Preview Box
+- **File**: `/docs/styles/drawer.css` (Line 77-82)
+- Added `.drawer-preview-box` class with theme-aware colors:
+  ```css
+  border: 1px solid var(--border-muted);
+  background: var(--bg-secondary);
+  color: var(--symbol-color);
+  ```
+
+### 7. Code Quality
+
+#### Linting
+- **File**: `/docs/scripts/modals.js` (Line 137)
+- Fixed unused eslint-disable directive
+- Changed: `// eslint-disable-next-line no-unused-expressions`
+- To: `void aboutModal.offsetHeight;`
+
+#### Cleanup
+- Removed temporary analysis files from `.claude/` directory:
+  - `github-dark-theme-implementation.tsx`
+  - `github-dark-theme.css`
+  - `tailwind-github-dark-config.js`
+  - `github-dark-theme-analysis.md`
+  - `ANALYSE-ZUSAMMENFASSUNG.md`
+  - `GITHUB-DARK-ANALYSIS-README.md`
+  - `INDEX.md`
+
+#### Verification Results
+- ✅ `npm run lint`: Clean (2 harmless warnings in generated files)
+- ✅ `npm run typecheck`: No type errors
+- ✅ `npm run docs:generate`: Successful builds
+
+## Work Remaining
+
+### None - Implementation Complete
+
+All requested features have been implemented and tested:
+- ✅ GitHub Light theme
+- ✅ GitHub Dark Dimmed theme (not Dark)
+- ✅ Theme switching works correctly
+- ✅ Symbol colors update when switching themes
+- ✅ All UI elements styled correctly in both themes
+- ✅ Search input behaves correctly in dark mode
+- ✅ Color picker "T" indicator properly centered
+- ✅ Frosted effects removed
+- ✅ Card borders removed
+- ✅ Header/footer colors refined
+- ✅ Code quality checks passing
+
+### Potential Future Enhancements (Not Requested)
+1. Add system preference detection for initial theme
+2. Add theme transition animations
+3. Consider adding more GitHub theme variants (Dark High Contrast, etc.)
+4. Add keyboard shortcut for theme toggle
+
+## Attempted Approaches
+
+### Failed Approach #1: Using `currentColor` CSS Value
+- **What**: Set `--symbol-color: currentColor` directly
+- **Why Failed**: Created circular reference - SVG `fill="currentColor"` referenced CSS `color`, which referenced `--symbol-color`, which was `currentColor`
+- **Solution**: Calculate actual hex color value based on theme state
+
+### Failed Approach #2: Using `color` CSS Property for SVGs
+- **What**: Set `.card svg { color: var(--symbol-color); }`
+- **Why Failed**: SVGs with `fill="currentColor"` inherit from parent element's `color`, not their own
+- **Correction**: This was actually correct - the issue was the circular reference in the variable
+
+### Failed Approach #3: Inline Styles for Color Picker
+- **What**: Set multiple inline styles on themeOption element
+- **Why Failed**: Not all styles were applied correctly, "T" remained off-center
+- **Solution**: Move all styling to CSS classes with proper flexbox centering
+
+### Confusion: Dark vs Dark Dimmed
+- **Initial Mistake**: Used GitHub "Dark" theme colors (#0d1117, #c9d1d9, etc.)
+- **User Correction**: Needed GitHub "Dark Dimmed" theme (softer colors: #22272e, #adbac7, etc.)
+- **Learning**: GitHub has 3 dark themes: Dark, Dark Dimmed, Dark High Contrast
+
+## Critical Context
+
+### Theme Implementation Pattern
+- **Class-based switching**: `:root.soft-dark` instead of `.dark-mode` on body
+- **Reason**: More consistent with modern CSS practices and easier to maintain
+- **Important**: All theme logic checks `document.documentElement.classList.contains('soft-dark')`
+
+### Symbol Color Inheritance
+- **SVG Structure**: `<svg fill="currentColor"><path>...</path></svg>`
+- **CSS Chain**:
+  1. `body { color: var(--fg-default) }`
+  2. `.card svg { color: var(--symbol-color) }`
+  3. SVG `fill="currentColor"` inherits from parent's `color`
+- **Theme-aware mode**: `--symbol-color` dynamically set to light/dark hex value
+
+### Border Color Hierarchy
+```
+--border-default: Most visible borders
+--border-muted: Subtle separators (header/footer)
+--border-subtle: Very soft edges
+```
+
+### Background Color Hierarchy
+```
+--bg-primary: Main content area (#ffffff / #22272e)
+--bg-secondary: Cards, inputs (#f6f8fa / #2d333b)
+--bg-inset: Header/footer (#f6f8fa / #1c2128 - darker in dark mode)
+```
+
+### GitHub Primer Design System References
+- Official source: https://primer.style/primitives/
+- Dark Dimmed values verified via GitHub Primer Primitives repository
+- Colors match official GitHub.com "Dark Dimmed" theme exactly
+
+### Build Process
+1. Edit source files in `/docs/scripts/` and `/docs/styles/`
+2. Run `npm run docs:generate` to compile to `/docs/dist/`
+3. Preview server: `npm run docs:preview` (http://localhost:3000)
+4. Auto-reload on file changes via BrowserSync
+
+### Important Files Map
+```
+/docs/
+├── styles/
+│   ├── main.css         (924 lines) - Main styles & theme variables
+│   ├── drawer.css       (108 lines) - Drawer component styles
+│   └── variables.css    (31 lines)  - Syntax highlighting colors
+├── scripts/
+│   ├── theme.js         (48 lines)  - Theme toggle logic
+│   ├── colors.js        (123 lines) - Color picker & symbol colors
+│   ├── symbols.js       (553 lines) - Symbol rendering & drawer
+│   ├── main.js          - Entry point
+│   └── modals.js        - Modal dialogs
+└── dist/                - Generated output (DO NOT EDIT)
+```
+
+## Current State
+
+### Deliverables Status
+- ✅ **Complete**: GitHub Light theme implementation
+- ✅ **Complete**: GitHub Dark Dimmed theme implementation
+- ✅ **Complete**: Theme switching functionality
+- ✅ **Complete**: All visual refinements
+- ✅ **Complete**: All bug fixes
+- ✅ **Complete**: Code quality checks
+
+### Version Info
+- Current version: `1.0.0` (per package.json)
+- Last release: `1.0.0` (2026-01-18T23:57:55Z)
+- Commits since release:
+  - `d6bce96` Minor changes
+  - `89ad2a8` Minor color changes
+  - `f8a4d78` Update color scheme in light and dark mode
+  - `de81034` Feature: Implement GitHub Light + Soft-Dark theme
+
+### Next Release: 1.0.1
+Release notes prepared for visual improvements and theme updates.
+
+### Git Status
+- Branch: `main`
+- Status: Clean working directory
+- Ready to commit: Yes
+- Suggested commit message:
+  ```
+  Refactor: Polish GitHub Dark Dimmed theme implementation
+
+  - Remove card borders in both light and dark modes
+  - Soften header/footer border colors
+  - Darken header/footer backgrounds in light mode
+  - Remove all frosted glass effects for better performance
+  - Fix lint warnings in modals.js
+  ```
+
+### Environment
+- Preview server running: http://localhost:3000 (PID: bf760cd)
+- Node version: v24.10.0
+- npm version: v11.6.2
+- Platform: Darwin 24.6.0 (macOS)
+
+### Known Limitations
+1. Modal overlay still has `backdrop-filter` (intentional - standard UI pattern)
+2. Two ESLint warnings in generated files (harmless, can be ignored)
+3. Large generated files trigger Babel optimization warnings (expected)
+
+### Open Questions
+- None - all user feedback has been addressed
+
+## Project Structure
+
+```
+sf-symbols-lib/
+├── .claude/
+│   ├── settings.local.json
+│   ├── plans/
+│   └── whats-next.md (THIS FILE)
+├── docs/
+│   ├── dist/              # Generated documentation site
+│   ├── scripts/           # JavaScript modules
+│   ├── styles/            # CSS files
+│   ├── markdown/          # Content files
+│   └── index.html         # Template
+├── src/
+│   ├── components/        # React components
+│   ├── hierarchical/      # Hierarchical variant data
+│   ├── monochrome/        # Monochrome variant data
+│   ├── common/            # Shared types
+│   └── index.tsx          # Main entry
+├── scripts/
+│   └── generate-docs-data.ts  # Build script
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Key Dependencies
+- React 19.0.0
+- TypeScript 5.7.3
+- Vite 6.0.5
+- @primer/primitives (for GitHub design tokens)
+
+## Continuation Instructions
+
+If resuming this work:
+
+1. **Preview the current state**: `npm run docs:preview`
+2. **Make CSS changes**: Edit files in `/docs/styles/`
+3. **Make JS changes**: Edit files in `/docs/scripts/`
+4. **Test changes**: `npm run docs:generate` then refresh browser
+5. **Verify quality**:
+   - `npm run lint`
+   - `npm run typecheck`
+6. **Commit when ready**: All changes tested and working
+
+The implementation is complete and production-ready.
