@@ -1,6 +1,6 @@
 {
   "name": "sf-symbols-lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "SF Symbols (7,007) React components library",
   "type": "module",
   "engines": {
