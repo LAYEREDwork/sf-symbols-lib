@@ -1,6 +1,6 @@
 {
   "name": "sf-symbols-lib",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "SF Symbols (7,007) React components library",
   "type": "module",
   "engines": {
@@ -27,7 +27,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc && vite build && tsc --emitDeclarationOnly",
+    "build": "tsc && vite build && tsc --emitDeclarationOnly && tsc-alias",
     "dev": "vite build --watch",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -38,11 +38,6 @@
     "docs:serve": "browser-sync start --server docs/dist --files docs/dist/index.html --no-open",
     "docs:preview": "npm run docs:generate && npm run docs:serve"
   },
-  "dependencies": {
-    "@types/react": "^18.3.0",
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
-  },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
@@ -51,6 +46,7 @@
     "@eslint/js": "^9.39.2",
     "@types/clean-css": "^4.2.11",
     "@types/node": "^25.0.6",
+    "@types/react": "^18.3.0",
     "@vitejs/plugin-react": "^5.1.2",
     "browser-sync": "^3.0.4",
     "clean-css": "^5.3.3",
@@ -61,6 +57,7 @@
     "globals": "^17.0.0",
     "marked": "^15.0.0",
     "terser": "^5.20.0",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.19.2",
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.52.0",

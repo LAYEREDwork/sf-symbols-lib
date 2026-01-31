@@ -1,10 +1,28 @@
 import { resolve } from 'path'
 
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, Plugin } from 'vite'
+
+/**
+ * Vite plugin that prepends the `"use client"` directive to all entry chunks.
+ * Required for Next.js App Router (RSC) compatibility — without it, all imports
+ * are treated as Server Components and crash when rendering JSX.
+ */
+function useClientDirective(): Plugin {
+  return {
+    name: 'use-client-directive',
+    generateBundle(_options, bundle) {
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type === 'chunk' && chunk.isEntry) {
+          chunk.code = '"use client";\n' + chunk.code
+        }
+      }
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), useClientDirective()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -21,7 +39,12 @@ export default defineConfig({
       formats: ['es']
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+      ],
       output: {
         globals: {
           react: 'React',
@@ -32,6 +55,6 @@ export default defineConfig({
       }
     },
     sourcemap: true,
-    emptyOutDir: true
+    emptyOutDir: true,
   }
 })
