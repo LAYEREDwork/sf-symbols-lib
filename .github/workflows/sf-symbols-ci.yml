@@ -126,7 +126,7 @@ jobs:
       with:
         name: package-dist
         path: dist
-    - run: npm cache clean --force
+    - run: npm install -g npm@latest
     - run: npm publish --provenance --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
