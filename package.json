@@ -1,6 +1,6 @@
 {
   "name": "sf-symbols-lib",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "SF Symbols (7,007) React components library",
   "type": "module",
   "engines": {
@@ -21,6 +21,10 @@
       "types": "./dist/monochrome/index.d.ts",
       "import": "./dist/monochrome/index.js"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phranck/sf-symbols-lib"
   },
   "files": [
     "dist",
