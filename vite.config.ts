@@ -8,7 +8,7 @@ import { defineConfig, Plugin } from 'vite'
  * Required for Next.js App Router (RSC) compatibility — without it, all imports
  * are treated as Server Components and crash when rendering JSX.
  */
-function useClientDirective(): Plugin {
+function clientDirectivePlugin(): Plugin {
   return {
     name: 'use-client-directive',
     generateBundle(_options, bundle) {
@@ -22,7 +22,7 @@ function useClientDirective(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), useClientDirective()],
+  plugins: [react(), clientDirectivePlugin()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),

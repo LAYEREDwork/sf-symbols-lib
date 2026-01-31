@@ -195,6 +195,7 @@ function generateVariantEntryPoint(
  */
 
 // Re-export all symbol names and constants
+// eslint-disable-next-line react-refresh/only-export-components
 export * from '@/components/sf-symbol-name';
 
 export { default as SFSymbol } from '@/common/SFSymbol';
